@@ -58,7 +58,7 @@
       --card-bg: #ffffff;
       --card-border: #cbd5e1;
       --text-main: #0f172a;
-      --text-muted: #475569;
+      --text-muted: #1e293b;
       --input-bg: #f8fafc;
       --nav-bg: rgba(255, 255, 255, 0.98);
       --chart-grid: #e2e8f0;
@@ -142,9 +142,9 @@
     <div class="flex items-center gap-2.5 min-w-0">
       <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-base shadow-md flex-shrink-0">🚗</div>
       <div class="min-w-0 truncate">
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-2">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm">v5 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm ml-0.5 flex-shrink-0">v5 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-medium truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -160,12 +160,12 @@
     </div>
   </header>
 
-  <main class="max-w-md mx-auto p-3 space-y-3.5">
+  <main class="max-w-md mx-auto p-3 space-y-3.5 pb-20">
 
     <!-- 1. SEKME: ÖZET -->
     <div id="tabDashboard" class="space-y-3.5">
       
-      <!-- DİNAMİK 45 GÜN KURALI HATIRLATICI ŞERİDİ (Görseldeki Format) -->
+      <!-- DİNAMİK 45 GÜN KURALI HATIRLATICI ŞERİDİ -->
       <div id="collapsibleReminderStrip" class="custom-card p-3 shadow-md cursor-pointer border-cyan-800/40" onclick="toggleSubReminderPanel()">
         <div class="flex justify-between items-center text-xs">
           <div class="flex items-center gap-2 truncate">
@@ -262,7 +262,7 @@
             <span class="text-lg text-cyan-400">📈</span>
             <div>
               <h4 class="text-xs font-black text-white">Grafikleri & Trend Analizlerini Göster</h4>
-              <p class="text-[10px] custom-muted font-medium">Gradient destekli aylık yol, yakıt ve fiyat eğrileri</p>
+              <p class="text-[10px] custom-muted font-medium">Renk geçişli aylık yol, yakıt ve fiyat eğrileri</p>
             </div>
           </div>
           <span id="chartAccordionIcon" class="text-[10px] custom-muted font-bold px-2.5 py-1 rounded-lg custom-card border">▼ Göster</span>
@@ -531,14 +531,14 @@
         </h3>
         <p class="text-[10px] custom-muted font-medium">Araç içinde daha rahat okumak için yazıları büyütebilirsiniz:</p>
         <div class="grid grid-cols-3 gap-2 pt-1">
-          <button onclick="setFontSize('small')" id="btnFontSmall" class="py-2 rounded-xl custom-card border text-[11px] font-bold hover:border-cyan-500 transition-all shadow-sm">
+          <button onclick="setFontSize('small')" id="btnFontSmall" class="py-2 rounded-xl text-[11px] font-bold transition-all shadow-sm">
             Küçük (%100)
           </button>
-          <button onclick="setFontSize('medium')" id="btnFontMed" class="py-2 rounded-xl custom-card border text-[11px] font-bold hover:border-cyan-500 transition-all shadow-sm">
-            Büyük (%115)
+          <button onclick="setFontSize('medium')" id="btnFontMed" class="py-2 rounded-xl text-[11px] font-bold transition-all shadow-sm">
+            Orta (%115)
           </button>
-          <button onclick="setFontSize('large')" id="btnFontLg" class="py-2 rounded-xl custom-card border text-[11px] font-bold hover:border-cyan-500 transition-all shadow-sm">
-            İri (%130)
+          <button onclick="setFontSize('large')" id="btnFontLg" class="py-2 rounded-xl text-[11px] font-bold transition-all shadow-sm">
+            Büyük (%130)
           </button>
         </div>
       </div>
@@ -568,14 +568,14 @@
         <div class="p-3 bg-rose-950/20 border border-rose-800/30 rounded-xl space-y-2">
           <label class="text-[10px] font-bold text-rose-300 block">Kalıcı silmek için <span class="text-white underline font-black">EVET</span> yazın:</label>
           <input type="text" id="wipeConfirmInput" placeholder="EVET" class="w-full text-xs p-2 rounded-xl custom-input border uppercase font-black tracking-widest text-center shadow-inner" />
-          <button onclick="wipeAllDataSecurely()" class="w-full py-2.5 bg-rose-700 hover:bg-rose-600 text-white rounded-xl text-xs font-black shadow-md">🗑️️ Kalıcı Olarak Sil</button>
+          <button onclick="wipeAllDataSecurely()" class="w-full py-2.5 bg-rose-700 hover:bg-rose-600 text-white rounded-xl text-xs font-black shadow-md">🗑 Kalıcı Olarak Sil</button>
         </div>
       </div>
 
       <div class="text-center pt-2 pb-1">
         <button onclick="openChangelogModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full custom-card border border-cyan-800/50 hover:border-cyan-500/80 transition-all shadow-md">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-[11px] font-black text-cyan-400">OtoTakip Pro v5 - Gelişmiş v5.0</span>
+          <span class="text-[11px] font-black text-cyan-400">OtoTakip Pro v5.1 - Gelişmiş Sürüm</span>
           <span class="text-[10px] custom-muted font-bold ml-1">Özellikler ▾</span>
         </button>
       </div>
@@ -583,9 +583,9 @@
     </div>
   </main>
 
-  <!-- MODALLAR -->
+  <!-- MODALLAR (Esnek Flex Mimarisiyle Alt Menü Çakışması Önleme) -->
   <div id="cardStatementModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border border-purple-700/60 shadow-2xl max-h-[92vh] flex flex-col">
+    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border border-purple-700/60 shadow-2xl max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2.5 shrink-0">
         <div class="flex items-center gap-2.5 min-w-0">
           <span class="text-2xl" id="stmtCardIcon">💳</span>
@@ -629,7 +629,7 @@
         </div>
       </div>
 
-      <div class="flex gap-2 shrink-0 pt-2">
+      <div class="flex gap-2 shrink-0 pt-2 border-t border-slate-700/40">
         <button onclick="deleteActiveStatementCard()" id="btnDeleteCurrentCard" class="py-2.5 px-3 bg-rose-950/40 border border-rose-800/50 hover:bg-rose-900/50 text-rose-400 rounded-xl text-xs font-bold">Kartı Sil</button>
         <button onclick="closeModal('cardStatementModal')" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-black shadow">
           Kapat
@@ -639,17 +639,17 @@
   </div>
 
   <div id="rewardModal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-xs w-full rounded-2xl p-4 space-y-3 border border-purple-800/60 shadow-xl">
-      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
+    <div class="custom-card max-w-xs w-full rounded-2xl p-4 space-y-3 border border-purple-800/60 shadow-xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0">
         <h4 id="rewardModalTitle" class="text-xs font-black text-white">🎁 Bonus / İade Ekle</h4>
         <button onclick="closeModal('rewardModal')" class="custom-muted text-base hover:text-white font-black">✕</button>
       </div>
-      <form onsubmit="saveRewardEntry(event)" class="space-y-2.5 text-xs">
+      <form onsubmit="saveRewardEntry(event)" class="space-y-2.5 text-xs flex-1 overflow-y-auto history-scroll pr-1">
         <input type="hidden" id="rwCardName" />
         <div><label class="custom-muted text-[10px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="rwDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none text-[11px] font-medium" /></div>
         <div><label class="custom-muted text-[10px] font-bold">Kazanılan Bonus / Puan (₺)</label><input type="number" step="0.01" id="rwAmount" required placeholder="örn: 250.00" class="w-full mt-1 custom-input border p-2.5 rounded-xl font-black text-emerald-400 text-sm outline-none" /></div>
         <div><label class="custom-muted text-[10px] font-bold">Kampanya Adı / Açıklama</label><input type="text" id="rwNote" placeholder="örn: 4x1000 TL Akaryakıt Bonusu" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none text-[11px] font-medium" /></div>
-        <div class="flex gap-2 pt-2">
+        <div class="flex gap-2 pt-2 shrink-0 border-t border-slate-700/40">
           <button type="button" onclick="closeModal('rewardModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">Vazgeç</button>
           <button type="submit" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-black text-xs shadow-md">Kaydet</button>
         </div>
@@ -659,7 +659,7 @@
 
   <!-- AYRIŞTIRILMIŞ SAĞLIK VE EKSPERTİZ RAPORU -->
   <div id="expertReportModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-lg w-full rounded-2xl p-4 space-y-3 border border-blue-700/60 shadow-2xl max-h-[94vh] flex flex-col">
+    <div class="custom-card max-w-lg w-full rounded-2xl p-4 space-y-3 border border-blue-700/60 shadow-2xl max-h-[88vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2.5 shrink-0">
         <div class="flex items-center gap-2.5">
           <span class="text-2xl" id="reportHeaderIcon">📋</span>
@@ -705,43 +705,44 @@
   </div>
 
   <div id="changelogModal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border border-cyan-800/60 shadow-xl">
-      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
+    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border border-cyan-800/60 shadow-xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0">
         <div class="flex items-center gap-2">
           <span class="text-lg">🚀</span>
           <div>
             <h4 class="text-xs font-black text-white">Sürüm & Güncelleme Notları</h4>
-            <span class="text-[9px] font-mono text-cyan-400 font-bold">OtoTakip Pro v5 - Gelişmiş v5.0</span>
+            <span class="text-[9px] font-mono text-cyan-400 font-bold">OtoTakip Pro v5.1</span>
           </div>
         </div>
         <button onclick="closeModal('changelogModal')" class="custom-muted text-base hover:text-white font-black">✕</button>
       </div>
 
-      <div class="max-h-[60vh] overflow-y-auto space-y-3 pr-1 text-xs history-scroll">
+      <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs history-scroll">
         <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/40 space-y-2">
-          <span class="font-black text-cyan-300 text-[11px] block">OtoTakip Pro v5 Yenilikleri:</span>
+          <span class="font-black text-cyan-300 text-[11px] block">OtoTakip Pro v5.1 Yenilikleri:</span>
           <ul class="text-[10px] custom-muted space-y-1.5 list-disc list-inside font-medium">
-            <li><b>Açılır Hatırlatıcı Şeridi:</b> Özet sayfasında şık, kompakt ve tıklandığında açılan hatırlatıcı paneli.</li>
-            <li><b>Ayrıştırılmış Sağlık & Ekspertiz Raporları:</b> Sürücünün teknik takibi ile alıcıya sunulacak servis ve garanti geçmişi net olarak ayrıldı.</li>
-            <li><b>Giderler Sekmesi:</b> Cüzdan sekmesinin adı kullanıcı dostu şekilde "Giderler" olarak güncellendi.</li>
-            <li><b>Gradient Grafik Altyapısı:</b> Modern renk geçişleri ile görsel olarak zenginleştirilmiş analizler.</li>
+            <li><b>Esnek Flex Modal Mimarisi:</b> Alt menü çakışmaları tamamen giderildi, butonlar her zaman erişilebilir.</li>
+            <li><b>Gündüz Teması Kontrast Optimizasyonu:</b> Aydınlık temada yazı okunabilirliği üst seviyeye taşındı.</li>
+            <li><b>Kilometre Anomali Koruması:</b> Hatalı ve mantıksız sayaç girişlerine karşı akıllı uyarı mekanizması.</li>
+            <li><b>Belge Önizleme (Thumbnail):</b> Yüklenen fiş ve faturaların form içinde mini önizlemesi.</li>
+            <li><b>Gelişmiş Arayüz Detayları:</b> Seçili font boyutu butonu belirginleştirildi, başlık alanı ferahlatıldı.</li>
           </ul>
         </div>
       </div>
 
-      <button onclick="closeModal('changelogModal')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black shadow-md">
+      <button onclick="closeModal('changelogModal')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black shadow-md shrink-0">
         Kapat
       </button>
     </div>
   </div>
 
-  <div id="tireMountModal" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden backdrop-blur-sm">
-    <div class="custom-card w-full max-w-md rounded-t-3xl p-4 border-t shadow-2xl">
-      <div class="flex justify-between items-center mb-3">
+  <div id="tireMountModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 class="font-black text-xs">🛞 Lastik Seti Tak / Değiştir</h3>
         <button onclick="closeModal('tireMountModal')" class="custom-muted text-lg font-black">✕</button>
       </div>
-      <form onsubmit="saveTireMount(event)" class="space-y-3 text-xs">
+      <form onsubmit="saveTireMount(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
         <div>
           <label class="custom-muted text-[10px] font-bold">Set Durumu</label>
           <select id="tmType" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-blue-400">
@@ -753,7 +754,7 @@
           <div><label class="custom-muted text-[10px] font-bold">Takılma Zamanı</label><input type="datetime-local" id="tmDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" /></div>
           <div><label class="custom-muted text-[10px] font-bold">Takıldığı KM</label><input type="number" id="tmKm" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black" /></div>
         </div>
-        <div class="flex gap-2.5 pt-2">
+        <div class="flex gap-2.5 pt-2 shrink-0 border-t border-slate-700/40">
           <button type="button" onclick="closeModal('tireMountModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">Vazgeç</button>
           <button type="submit" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xs shadow-md">Onayla</button>
         </div>
@@ -761,57 +762,63 @@
     </div>
   </div>
 
-  <div id="tireActionModal" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden backdrop-blur-sm">
-    <div class="custom-card w-full max-w-md rounded-t-3xl p-4 border-t max-h-[90vh] flex flex-col shadow-2xl">
-      <div class="flex justify-between items-center mb-2.5 shrink-0">
+  <div id="tireActionModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[85vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center mb-2.5 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="tireActionModalTitle" class="font-black text-xs">🛞 Lastik İşlemleri</h3>
         <button onclick="closeModal('tireActionModal')" class="custom-muted text-lg font-black">✕</button>
       </div>
-      <div class="mb-3 border border-slate-700/40 rounded-xl bg-slate-800/20 p-2.5 overflow-y-auto history-scroll shrink min-h-[80px] max-h-40">
-        <h4 class="text-[10px] custom-muted font-black mb-1.5 uppercase tracking-wider border-b border-slate-700/50 pb-1">Geçmiş İşlemler</h4>
-        <div id="tireHistoryList" class="space-y-1.5"></div>
-      </div>
-      <form onsubmit="saveTireAction(event)" class="space-y-2.5 text-xs shrink-0">
-        <input type="hidden" id="taPosition" />
-        <div class="p-3 border border-slate-700/50 rounded-xl bg-slate-800/40 space-y-2">
-          <h4 class="text-[10px] font-black text-cyan-400">➕ Yeni İşlem Ekle</h4>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="custom-muted text-[9px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="taDate" required class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-medium" /></div>
-            <div>
-              <label class="custom-muted text-[9px] font-bold">İşlem / Durum</label>
-              <select id="taAction" class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-black">
-                <option value="Sorunsuz">Sorunsuz / Kontrol Edildi</option>
-                <option value="Fitil / Yama Yapıldı">Fitil / Yama Yapıldı</option>
-                <option value="Tamir Gördü (Balans/Sibop)">Tamir Gördü</option>
-                <option value="Yeni Lastikle Değişti">Sıfır Yeni Lastikle Değişti</option>
-              </select>
+      <div class="flex-1 overflow-y-auto history-scroll space-y-3 pr-1">
+        <div class="border border-slate-700/40 rounded-xl bg-slate-800/20 p-2.5">
+          <h4 class="text-[10px] custom-muted font-black mb-1.5 uppercase tracking-wider border-b border-slate-700/50 pb-1">Geçmiş İşlemler</h4>
+          <div id="tireHistoryList" class="space-y-1.5"></div>
+        </div>
+        <form onsubmit="saveTireAction(event)" class="space-y-2.5 text-xs">
+          <input type="hidden" id="taPosition" />
+          <div class="p-3 border border-slate-700/50 rounded-xl bg-slate-800/40 space-y-2">
+            <h4 class="text-[10px] font-black text-cyan-400">➕ Yeni İşlem Ekle</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="custom-muted text-[9px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="taDate" required class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-medium" /></div>
+              <div>
+                <label class="custom-muted text-[9px] font-bold">İşlem / Durum</label>
+                <select id="taAction" class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-black">
+                  <option value="Sorunsuz">Sorunsuz / Kontrol Edildi</option>
+                  <option value="Fitil / Yama Yapıldı">Fitil / Yama Yapıldı</option>
+                  <option value="Tamir Gördü (Balans/Sibop)">Tamir Gördü</option>
+                  <option value="Yeni Lastikle Değişti">Sıfır Yeni Lastikle Değişti</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="custom-muted text-[9px] font-bold">Tutar (₺)</label><input type="number" step="0.01" id="taCost" placeholder="0.00" class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-black" /></div>
+              <div><label class="custom-muted text-[9px] font-bold">Not</label><input type="text" id="taNote" placeholder="örn: Çivi tamiri" class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-medium" /></div>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="custom-muted text-[9px] font-bold">Tutar (₺)</label><input type="number" step="0.01" id="taCost" placeholder="0.00" class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-black" /></div>
-            <div><label class="custom-muted text-[9px] font-bold">Not</label><input type="text" id="taNote" placeholder="örn: Çivi tamiri" class="w-full mt-1 custom-input border p-2 rounded-xl outline-none text-[11px] font-medium" /></div>
-          </div>
-        </div>
-        <div class="flex gap-2.5 pt-1">
-          <button type="button" onclick="closeModal('tireActionModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-[11px]">Kapat</button>
-          <button type="submit" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-black text-[11px] shadow-md">Kaydet</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="flex gap-2.5 pt-3 shrink-0 border-t border-slate-700/40">
+        <button type="button" onclick="closeModal('tireActionModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-[11px]">Kapat</button>
+        <button type="button" onclick="document.getElementById('tireActionModal').querySelector('form').requestSubmit()" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-black text-[11px] shadow-md">Kaydet</button>
+      </div>
     </div>
   </div>
 
-  <div id="odoModal" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden backdrop-blur-sm">
-    <div class="custom-card w-full max-w-md rounded-t-3xl p-4 border-t shadow-2xl">
-      <div class="flex justify-between items-center mb-3">
+  <div id="odoModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="odoModalTitle" class="font-black text-xs">📍 Araç Kilometresi Kaydet</h3>
         <button onclick="closeModal('odoModal')" class="custom-muted text-lg font-black">✕</button>
       </div>
-      <form onsubmit="saveManualOdo(event)" class="space-y-3 text-xs">
+      <form onsubmit="saveManualOdo(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
         <input type="hidden" id="mOdoId" />
         <div><label class="custom-muted text-[10px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="mOdoDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" /></div>
-        <div><label class="custom-muted text-[10px] font-bold">Mevcut Kilometre (ODO)</label><input type="number" id="mOdoInput" required placeholder="örn: 12500" class="w-full mt-1 custom-input border p-3 rounded-xl outline-none font-black text-lg text-cyan-400" /></div>
+        <div>
+          <label class="custom-muted text-[10px] font-bold">Mevcut Kilometre (ODO)</label>
+          <input type="number" id="mOdoInput" required oninput="checkOdoAnomaly(this.value, 'odoAnomalyWarning')" placeholder="örn: 12500" class="w-full mt-1 custom-input border p-3 rounded-xl outline-none font-black text-lg text-cyan-400" />
+          <div id="odoAnomalyWarning" class="text-[10px] text-amber-400 font-bold mt-1 hidden">⚠ Uyarı: Girilen kilometre geçmiş kayıtlarla uyumsuz görünüyor!</div>
+        </div>
         <div><label class="custom-muted text-[10px] font-bold">Açıklama / Not</label><input type="text" id="mOdoNote" placeholder="örn: Sayaç kontrolü" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" /></div>
-        <div class="flex gap-2.5 pt-2">
+        <div class="flex gap-2.5 pt-2 shrink-0 border-t border-slate-700/40">
           <button type="button" onclick="closeModal('odoModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">Vazgeç</button>
           <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-xs shadow-md">Kaydet</button>
         </div>
@@ -819,17 +826,21 @@
     </div>
   </div>
 
-  <div id="fuelModal" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden backdrop-blur-sm">
-    <div class="custom-card w-full max-w-md rounded-t-3xl p-4 border-t max-h-[90vh] overflow-y-auto shadow-2xl">
-      <div class="flex justify-between items-center mb-3">
+  <div id="fuelModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[88vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="fuelModalTitle" class="font-black text-xs">⛽ Yeni Yakıt Alımı</h3>
         <button onclick="closeModal('fuelModal')" class="custom-muted text-lg font-black">✕</button>
       </div>
-      <form id="fuelForm" onsubmit="saveFuel(event)" class="space-y-3 text-xs">
+      <form id="fuelForm" onsubmit="saveFuel(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
         <input type="hidden" id="fId" />
         <div class="grid grid-cols-2 gap-2.5">
           <div><label class="custom-muted text-[10px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="fDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" /></div>
-          <div><label class="custom-muted text-[10px] font-bold">Kilometre (ODO)</label><input type="number" id="fKm" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-cyan-400" /></div>
+          <div>
+            <label class="custom-muted text-[10px] font-bold">Kilometre (ODO)</label>
+            <input type="number" id="fKm" required oninput="checkOdoAnomaly(this.value, 'fuelAnomalyWarning')" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-cyan-400" />
+            <div id="fuelAnomalyWarning" class="text-[9px] text-amber-400 font-bold mt-0.5 hidden">⚠ Anormal KM artışı!</div>
+          </div>
         </div>
         <div class="grid grid-cols-2 gap-2.5">
           <div>
@@ -856,12 +867,16 @@
           </div>
         </div>
         <div>
-          <label class="custom-muted text-[10px] font-bold flex justify-between"><span>📷 Fiş / Görsel / PDF</span><span class="text-[9px] text-cyan-400">Sıkıştırma</span></label>
-          <input type="file" id="fDocInput" accept="image/*,application/pdf" onchange="handleDocCompress(event, 'fDocData')" class="mt-1 w-full text-[11px] custom-muted file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold" />
-          <input type="hidden" id="fDocData" /><div id="fDocPreviewText" class="text-[10px] text-emerald-400 mt-1 hidden font-bold">✓ Belge eklendi</div>
+          <label class="custom-muted text-[10px] font-bold flex justify-between"><span>📷 Fiş / Belge Yükle</span><span class="text-[9px] text-cyan-400">Sıkıştırma</span></label>
+          <input type="file" id="fDocInput" accept="image/*,application/pdf" onchange="handleDocCompress(event, 'fDocData', 'fDocThumbnail')" class="mt-1 w-full text-[11px] custom-muted file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold" />
+          <input type="hidden" id="fDocData" />
+          <div id="fDocPreviewBox" class="mt-2 hidden">
+            <img id="fDocThumbnail" class="w-16 h-16 object-cover rounded-xl border border-blue-500/50 shadow" />
+            <span class="text-[9px] text-emerald-400 font-bold block mt-1">✓ Fiş önizlemesi hazır</span>
+          </div>
         </div>
         <div class="flex items-center gap-2 pt-1"><input type="checkbox" id="fIsFull" checked class="w-4 h-4 rounded text-blue-600" /><label for="fIsFull" class="text-[11px] font-bold">Depo Tam Dolduruldu</label></div>
-        <div class="flex gap-2.5 pt-2">
+        <div class="flex gap-2.5 pt-2 shrink-0 border-t border-slate-700/40">
           <button type="button" onclick="closeModal('fuelModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">İptal</button>
           <button type="submit" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xs shadow-md">Kaydet</button>
         </div>
@@ -869,13 +884,13 @@
     </div>
   </div>
 
-  <div id="expenseModal" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden backdrop-blur-sm">
-    <div class="custom-card w-full max-w-md rounded-t-3xl p-4 border-t max-h-[90vh] overflow-y-auto shadow-2xl">
-      <div class="flex justify-between items-center mb-3">
+  <div id="expenseModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[88vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="expModalTitle" class="font-black text-xs">🛠️ Yeni Gider & Servis Kaydı</h3>
         <button onclick="closeModal('expenseModal')" class="custom-muted text-lg font-black">✕</button>
       </div>
-      <form id="expForm" onsubmit="saveExpense(event)" class="space-y-3 text-xs">
+      <form id="expForm" onsubmit="saveExpense(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
         <input type="hidden" id="eId" />
         <input type="hidden" id="eTireSyncId" />
         <div class="grid grid-cols-2 gap-2.5">
@@ -936,13 +951,17 @@
 
         <div>
           <label class="custom-muted text-[10px] font-bold flex justify-between">
-            <span>📄 Fatura / Belge</span>
+            <span>📄 Fatura / Belge Yükle</span>
             <span class="text-[9px] text-cyan-400">Arşivde saklanır</span>
           </label>
-          <input type="file" id="eDocInput" accept="image/*,application/pdf" onchange="handleDocCompress(event, 'eDocData')" class="mt-1 w-full text-[11px] custom-muted file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold" />
-          <input type="hidden" id="eDocData" /><div id="eDocPreviewText" class="text-[10px] text-emerald-400 mt-1 hidden font-bold">✓ Belge yüklendi</div>
+          <input type="file" id="eDocInput" accept="image/*,application/pdf" onchange="handleDocCompress(event, 'eDocData', 'eDocThumbnail')" class="mt-1 w-full text-[11px] custom-muted file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold" />
+          <input type="hidden" id="eDocData" />
+          <div id="eDocPreviewBox" class="mt-2 hidden">
+            <img id="eDocThumbnail" class="w-16 h-16 object-cover rounded-xl border border-emerald-500/50 shadow" />
+            <span class="text-[9px] text-emerald-400 font-bold block mt-1">✓ Belge önizlemesi hazır</span>
+          </div>
         </div>
-        <div class="flex gap-2.5 pt-2">
+        <div class="flex gap-2.5 pt-2 shrink-0 border-t border-slate-700/40">
           <button type="button" onclick="closeModal('expenseModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">İptal</button>
           <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs shadow-md">Kaydet</button>
         </div>
@@ -951,10 +970,10 @@
   </div>
 
   <div id="docViewerModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2"><h4 class="text-xs font-black">📄 Belge / Fiş</h4><button onclick="closeModal('docViewerModal')" class="custom-muted text-lg font-black">✕</button></div>
-      <div id="docViewerContent" class="max-h-[60vh] overflow-auto flex flex-col items-center justify-center"></div>
-      <button onclick="closeModal('docViewerModal')" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-black shadow">Kapat</button>
+    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0"><h4 class="text-xs font-black">📄 Belge / Fiş</h4><button onclick="closeModal('docViewerModal')" class="custom-muted text-lg font-black">✕</button></div>
+      <div id="docViewerContent" class="flex-1 overflow-auto flex flex-col items-center justify-center py-2"></div>
+      <button onclick="closeModal('docViewerModal')" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-black shadow shrink-0">Kapat</button>
     </div>
   </div>
 
@@ -1002,6 +1021,18 @@
       localStorage.setItem("ototakip_font_size", key);
       const badge = document.getElementById("currentFontSizeBadge");
       if (badge) badge.innerText = fontSizes[key].label;
+
+      ['Small', 'Med', 'Lg'].forEach(k => {
+        const btn = document.getElementById("btnFont" + k);
+        if (btn) {
+          const matches = (k === 'Small' && key === 'small') || (k === 'Med' && key === 'medium') || (k === 'Lg' && key === 'large');
+          if (matches) {
+            btn.className = "py-2 rounded-xl bg-blue-600 text-white font-black shadow-md transition-all";
+          } else {
+            btn.className = "py-2 rounded-xl custom-card border text-[11px] font-bold hover:border-cyan-500 transition-all shadow-sm custom-muted";
+          }
+        }
+      });
     }
     function setFontSize(key) { applyFontSize(key); }
 
@@ -1269,6 +1300,22 @@
       return Math.max(maxKm, manualOdo);
     }
 
+    // Kilometre Anomali Kontrolü
+    function checkOdoAnomaly(val, warningId) {
+      const km = parseFloat(val);
+      const warnEl = document.getElementById(warningId);
+      if (!warnEl) return;
+      const latest = getLatestVehicleKm();
+      if (km > 0 && latest > 0) {
+        if (km < latest || (km - latest > 5000)) {
+          warnEl.classList.remove("hidden");
+          warnEl.innerText = km < latest ? "⚠ Girilen KM mevcut son KM'den düşük!" : "⚠ Önceki kayda göre aşırı büyük KM artışı!";
+          return;
+        }
+      }
+      warnEl.classList.add("hidden");
+    }
+
     function applyCarProfile() {
       const liveKm = getLatestVehicleKm();
       document.getElementById("headerCarName").innerText = carProfile.name || "Aracım";
@@ -1380,6 +1427,7 @@
         document.getElementById("mOdoNote").value = "";
         document.getElementById("odoModalTitle").innerText = "📍 Araç Kilometresi Kaydet";
       }
+      document.getElementById("odoAnomalyWarning").classList.add("hidden");
       document.getElementById("odoModal").classList.remove("hidden");
     }
 
@@ -1567,7 +1615,7 @@
       document.getElementById("expForm").reset();
       document.getElementById("eId").value = "";
       document.getElementById("eDocData").value = "";
-      document.getElementById("eDocPreviewText").classList.add("hidden");
+      document.getElementById("eDocPreviewBox").classList.add("hidden");
       document.getElementById("eDate").value = getNowLocalISO();
       document.getElementById("eIncludeInExpert").checked = true;
       populatePaymentSelects();
@@ -1589,7 +1637,12 @@
       document.getElementById("eExtraParts").value = exp.extraParts || "";
       document.getElementById("eIncludeInExpert").checked = exp.includeInExpert !== false;
       document.getElementById("eDocData").value = exp.docData || "";
-      if (exp.docData) showCompressSuccess('eDocData');
+      if (exp.docData) {
+        document.getElementById("eDocThumbnail").src = exp.docData;
+        document.getElementById("eDocPreviewBox").classList.remove("hidden");
+      } else {
+        document.getElementById("eDocPreviewBox").classList.add("hidden");
+      }
       toggleExpenseFields();
       document.getElementById("expenseModal").classList.remove("hidden");
     }
@@ -2025,7 +2078,7 @@
         });
       }
       persistAllData();
-      openTireActionModal(pos); 
+      closeModal("tireActionModal");
       renderAll();
     }
 
@@ -2141,7 +2194,7 @@
     function renderCharts(calcFuels) {
       if (typeof Chart === "undefined") return;
       const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
-      const tC = currentTheme === 'light' ? '#475569' : '#94a3b8'; 
+      const tC = currentTheme === 'light' ? '#1e293b' : '#94a3b8'; 
       const m = processMonthlyData(calcFuels);
 
       const ctxKm = document.getElementById("monthlyKmCanvas").getContext("2d");
@@ -2192,33 +2245,43 @@
       const cF = calculateFuelMetrics(fF); 
       const m = processMonthlyData(cF);
       const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
-      const tC = currentTheme === 'light' ? '#475569' : '#94a3b8';
+      const tC = currentTheme === 'light' ? '#1e293b' : '#94a3b8';
       
+      let gradFill = ctx.createLinearGradient(0, 0, 0, 300);
+      gradFill.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+      gradFill.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+
       if (landscapeChartInstance) landscapeChartInstance.destroy();
       if (type === 'km') { 
         iconEl.innerText = "📈"; 
         titleEl.innerText = "Aylık Yol Analizi (Manuel KM Dahil)"; 
         landscapeChartInstance = new Chart(ctx, { 
           type: 'bar', 
-          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: 'Yol (km)', data: m.kmData.length ? m.kmData : [0], backgroundColor: '#3b82f6', borderRadius: 8 }] }, 
+          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: 'Yol (km)', data: m.kmData.length ? m.kmData : [0], backgroundColor: gradFill, borderColor: '#3b82f6', borderWidth: 2, borderRadius: 8 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
       } else if (type === 'fuel') { 
         iconEl.innerText = "⛽"; 
         titleEl.innerText = fuelChartMode === 'tl' ? "Aylık Akaryakıt (₺ Tutar)" : "Aylık Akaryakıt (⛽ Litre)"; 
         const dsVals = fuelChartMode === 'tl' ? (m.costData.length ? m.costData : [0]) : (m.litData.length ? m.litData : [0]);
+        let gradFuelModal = ctx.createLinearGradient(0, 0, 0, 300);
+        gradFuelModal.addColorStop(0, 'rgba(245, 158, 11, 0.8)');
+        gradFuelModal.addColorStop(1, 'rgba(245, 158, 11, 0.2)');
         landscapeChartInstance = new Chart(ctx, { 
           type: 'bar', 
-          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: '#f59e0b', borderRadius: 8 }] }, 
+          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
       } else if (type === 'price') { 
         iconEl.innerText = "📊"; 
         titleEl.innerText = "Pompa Litre Fiyatı"; 
+        let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 300);
+        gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.5)');
+        gradPriceModal.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
         const sF = cF.slice().sort((a, b) => new Date(a.date) - new Date(b.date)); 
         landscapeChartInstance = new Chart(ctx, { 
           type: 'line', 
-          data: { labels: sF.length ? sF.map(f => `${formatDateTimeLabel(f.date)} (${f.station})`) : ["-"], datasets: [{ label: 'Fiyat (₺/L)', data: sF.length ? sF.map(f => (f.total / f.liters).toFixed(2)) : [0], borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.15)', fill: true, tension: 0.35, pointBackgroundColor: '#0284c7', pointRadius: 5 }] }, 
+          data: { labels: sF.length ? sF.map(f => `${formatDateTimeLabel(f.date)} (${f.station})`) : ["-"], datasets: [{ label: 'Fiyat (₺/L)', data: sF.length ? sF.map(f => (f.total / f.liters).toFixed(2)) : [0], borderColor: '#38bdf8', backgroundColor: gradPriceModal, fill: true, tension: 0.35, pointBackgroundColor: '#0284c7', pointRadius: 5 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 10 } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
       }
@@ -2497,11 +2560,12 @@
       document.getElementById("fuelForm").reset(); 
       document.getElementById("fId").value = ""; 
       document.getElementById("fDocData").value = ""; 
-      document.getElementById("fDocPreviewText").classList.add("hidden"); 
+      document.getElementById("fDocPreviewBox").classList.add("hidden"); 
       document.getElementById("fDate").value = getNowLocalISO(); 
       const lk = getLatestVehicleKm(); 
       if (lk > 0) document.getElementById("fKm").value = lk; 
       document.getElementById("fuelModalTitle").innerText = "⛽ Yeni Yakıt Alımı"; 
+      document.getElementById("fuelAnomalyWarning").classList.add("hidden");
       populatePaymentSelects();
       updateLpgVisibilityInApp(); 
       document.getElementById("fuelModal").classList.remove("hidden"); 
@@ -2523,8 +2587,14 @@
       document.getElementById("fPaymentMethod").value = f.paymentMethod || customPaymentMethods[0];
       document.getElementById("fIsFull").checked = f.isFull; 
       document.getElementById("fDocData").value = f.docData || ""; 
-      if (f.docData) showCompressSuccess('fDocData'); 
+      if (f.docData) {
+        document.getElementById("fDocThumbnail").src = f.docData;
+        document.getElementById("fDocPreviewBox").classList.remove("hidden");
+      } else {
+        document.getElementById("fDocPreviewBox").classList.add("hidden");
+      }
       document.getElementById("fuelModalTitle").innerText = "Yakıtı Düzenle"; 
+      document.getElementById("fuelAnomalyWarning").classList.add("hidden");
       updateLpgVisibilityInApp(); 
       document.getElementById("fuelModal").classList.remove("hidden"); 
     }
@@ -2572,14 +2642,15 @@
       } 
     }
 
-    function handleDocCompress(event, targetHiddenId) { 
+    function handleDocCompress(event, targetHiddenId, thumbnailImgId) { 
       const file = event.target.files[0]; 
       if (!file) return; 
       if (file.type === "application/pdf") { 
         const r = new FileReader(); 
         r.onload = (e) => { 
           document.getElementById(targetHiddenId).value = e.target.result; 
-          showCompressSuccess(targetHiddenId); 
+          const box = document.getElementById(thumbnailImgId === 'fDocThumbnail' ? 'fDocPreviewBox' : 'eDocPreviewBox');
+          if(box) box.classList.add('hidden');
         }; 
         r.readAsDataURL(file); 
         return; 
@@ -2597,14 +2668,20 @@
           canvas.width = w; 
           canvas.height = h; 
           canvas.getContext("2d").drawImage(img, 0, 0, w, h); 
-          document.getElementById(targetHiddenId).value = canvas.toDataURL("image/jpeg", 0.65); 
-          showCompressSuccess(targetHiddenId); 
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.65);
+          document.getElementById(targetHiddenId).value = dataUrl; 
+          
+          const thumb = document.getElementById(thumbnailImgId);
+          const box = document.getElementById(thumbnailImgId === 'fDocThumbnail' ? 'fDocPreviewBox' : 'eDocPreviewBox');
+          if (thumb && box) {
+            thumb.src = dataUrl;
+            box.classList.remove('hidden');
+          }
         }; 
       }; 
       r.readAsDataURL(file); 
     }
 
-    function showCompressSuccess(id) { document.getElementById(id === 'fDocData' ? 'fDocPreviewText' : 'eDocPreviewText').classList.remove('hidden'); }
     function viewDocument(dataUri) { 
       const m = document.getElementById("docViewerModal"); 
       const c = document.getElementById("docViewerContent"); 
@@ -2643,7 +2720,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.1_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -2655,7 +2732,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v5.1_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
