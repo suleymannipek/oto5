@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OtoTakip Pro v5.2</title>
+  <title>OtoTakip Pro v5.4</title>
   
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -146,7 +146,7 @@
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.2 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.4 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -258,22 +258,23 @@
             <span class="text-lg text-cyan-500">📈</span>
             <div>
               <h4 class="text-xs font-black">Aylık Yol & Harcama Grafikleri</h4>
-              <p class="text-[10px] custom-muted font-semibold">Sütuna tıklayarak o ayın günlük detayını görün</p>
+              <p class="text-[10px] custom-muted font-semibold">Grafiklere tıklayarak tam ekran inceleyin</p>
             </div>
           </div>
           <span id="chartAccordionIcon" class="text-[10px] custom-muted font-bold px-2.5 py-1 rounded-lg custom-card border">▼ Göster</span>
         </button>
 
         <div id="chartsAccordionBody" class="hidden p-3.5 pt-0 space-y-3.5 border-t border-slate-700/40">
-          <div class="custom-card p-3.5 shadow transition-all mt-3.5">
+          
+          <div onclick="openLandscapeChart('km')" class="custom-card p-3.5 shadow transition-all mt-3.5 cursor-pointer hover:border-blue-500/50">
             <div class="flex justify-between items-start mb-2">
               <div>
-                <h4 class="text-xs font-black flex items-center gap-1.5"><span class="text-blue-500">📈</span> Aylık Yol Analizi</h4>
-                <p id="kmDiffSummary" class="text-[10px] text-cyan-500 mt-0.5 font-bold cursor-pointer" onclick="openLandscapeChart('km')">🔍 Tam Ekran Aç | Sütunlara tıklayarak o ayın günlerini görün</p>
+                <h4 class="text-xs font-black flex items-center gap-1.5"><span class="text-blue-500">📈</span> Aylık Yol Analizi <span class="text-[10px] text-blue-400 font-normal">⛶ Büyüt</span></h4>
+                <p id="kmDiffSummary" class="text-[10px] text-cyan-500 mt-0.5 font-bold">Büyütmek ve aylık/günlük detay için tıklayın</p>
               </div>
-              <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-blue-900/20 text-blue-500 border border-blue-700/40">Tıklanabilir</span>
+              <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-blue-900/20 text-blue-500 border border-blue-700/40">KM Bar</span>
             </div>
-            <div class="h-40 w-full"><canvas id="monthlyKmCanvas"></canvas></div>
+            <div class="h-36 w-full pointer-events-none"><canvas id="monthlyKmCanvas"></canvas></div>
           </div>
 
           <div onclick="openLandscapeChart('fuel')" class="custom-card p-3.5 shadow cursor-pointer hover:border-amber-500/50 transition-all">
@@ -571,30 +572,34 @@
     </div>
   </main>
 
-  <!-- GÜNLÜK KM DETAY MODALI -->
-  <div id="dailyKmModal" class="fixed inset-0 bg-black/85 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border shadow-2xl max-h-[85vh] flex flex-col">
-      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0">
+  <!-- TAM EKRAN BÜYÜTÜLMÜŞ GRAFİK & AY SEÇİM/GÜNLÜK MODALI -->
+  <div id="landscapeChartModal" class="fixed inset-0 bg-black/95 modal-backdrop flex items-center justify-center p-2 hidden backdrop-blur-md">
+    <div id="landscapeModalContent" class="custom-card rounded-3xl p-4 flex flex-col justify-between border shadow-2xl w-[96vw] h-[86vh] max-w-[960px]">
+      
+      <div class="flex justify-between items-center pb-2.5 border-b border-slate-700/40 shrink-0">
         <div class="flex items-center gap-2">
-          <span class="text-lg text-blue-500">📅</span>
+          <span class="text-xl" id="landscapeChartIcon">📈</span>
           <div>
-            <h4 class="text-xs font-black" id="dailyKmModalTitle">Günlük KM Analizi</h4>
-            <span class="text-[9px] font-mono text-cyan-500 font-bold" id="dailyKmModalSub">Seçilen Ay Detayı</span>
+            <h3 id="landscapeChartTitle" class="text-xs font-black">KM Analizi (Aylık)</h3>
+            <p id="landscapeChartSubText" class="text-[9px] text-cyan-500 font-bold">Sütuna tıklayarak o ayın günlerini görün</p>
           </div>
         </div>
-        <button onclick="closeModal('dailyKmModal')" class="custom-muted text-base hover:text-white font-black">✕</button>
+        <div class="flex items-center gap-2">
+          <button id="btnReturnToMonthlyKm" onclick="renderLandscapeMonthlyKm()" class="hidden text-xs bg-blue-600 px-3 py-1.5 rounded-xl font-black text-white hover:bg-blue-500 shadow">
+            ◀ Aylık Grafiğe Dön
+          </button>
+          <button onclick="closeLandscapeChart()" class="text-xs bg-slate-800 px-3.5 py-1.5 rounded-full font-black text-white hover:bg-slate-700 shadow">✕ Kapat</button>
+        </div>
       </div>
 
-      <div class="h-44 w-full shrink-0 pt-2"><canvas id="dailyKmCanvas"></canvas></div>
-
-      <div class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs history-scroll border-t border-slate-700/40 pt-2">
-        <h5 class="text-[10px] font-black uppercase text-cyan-500">Günlük Sayaç & Yol Listesi</h5>
-        <div id="dailyKmLogList" class="space-y-1.5"></div>
+      <div class="flex-1 w-full py-2 relative min-h-0">
+        <canvas id="landscapeCanvas"></canvas>
       </div>
 
-      <button onclick="closeModal('dailyKmModal')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black shadow-md shrink-0">
-        Kapat
-      </button>
+      <div id="landscapeBottomInfoBox" class="shrink-0 max-h-36 overflow-y-auto history-scroll p-2.5 theme-sub-box rounded-xl border border-slate-700/50 mt-1 space-y-1">
+        <div class="text-[10px] font-bold text-center custom-muted py-1">Sütuna tıklayarak o ayın sayaç dökümünü ve gün analizini açabilirsiniz.</div>
+      </div>
+
     </div>
   </div>
 
@@ -719,7 +724,7 @@
               <option value="Lastik Tamir / Değişim">🛞 Lastik Tamir / Değişim</option>
               <option value="Kasko">🛡️ Kasko Poliçesi</option>
               <option value="Trafik Sigortası">📋 Trafik Sigortası</option>
-              <option value="MTV (1. Taksit - Ocak)">🏛️ MTV (Ocak)</option>
+              <option value="MTV (1. Taksit - Ocak)">🏛 MTV (Ocak)</option>
               <option value="MTV (2. Taksit - Temmuz)">🏛️ MTV (Temmuz)</option>
               <option value="TÜVTÜRK Muayene">🔍 TÜVTÜRK Muayene</option>
               <option value="Oto Yıkama & Temizlik">🧽 Yıkama & Temizlik</option>
@@ -793,7 +798,7 @@
           <span class="text-2xl" id="reportHeaderIcon">📋</span>
           <div>
             <h3 class="text-xs font-black" id="reportHeaderTitle">Araç Durum Raporu</h3>
-            <p class="text-[9px] text-cyan-500 font-mono font-bold" id="expReportDate">Rapor Tarihi: --</p>
+            <p id="expReportDate" class="text-[9px] text-cyan-500 font-mono font-bold">Rapor Tarihi: --</p>
           </div>
         </div>
         <button onclick="closeModal('expertReportModal')" class="custom-muted text-base hover:text-white font-black">✕</button>
@@ -907,7 +912,7 @@
   <div id="tireMountModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
-        <h3 class="font-black text-xs">🛞 Lastik Seti Tak / Değiştir</h3>
+        <h3 id="tireMountModalTitle" class="font-black text-xs">🛞 Lastik Seti Tak / Değiştir</h3>
         <button onclick="closeModal('tireMountModal')" class="custom-muted text-lg font-black">✕</button>
       </div>
       <form onsubmit="saveTireMount(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
@@ -976,16 +981,6 @@
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0"><h4 class="text-xs font-black">📄 Belge / Fiş</h4><button onclick="closeModal('docViewerModal')" class="custom-muted text-lg font-black">✕</button></div>
       <div id="docViewerContent" class="flex-1 overflow-auto flex flex-col items-center justify-center py-2"></div>
       <button onclick="closeModal('docViewerModal')" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-black shadow shrink-0">Kapat</button>
-    </div>
-  </div>
-
-  <div id="landscapeChartModal" class="fixed inset-0 bg-black/95 modal-backdrop flex items-center justify-center p-2 hidden backdrop-blur-md">
-    <div id="landscapeModalContent" class="custom-card rounded-3xl p-4 flex flex-col justify-between border shadow-2xl w-[96vw] h-[75vh] max-w-[900px]">
-      <div class="flex justify-between items-center pb-2.5 border-b border-slate-700/40">
-        <div class="flex items-center gap-2.5"><span class="text-lg" id="landscapeChartIcon">📈</span><h3 id="landscapeChartTitle" class="text-xs font-black">Grafik Detayı</h3></div>
-        <button onclick="closeLandscapeChart()" class="text-xs bg-slate-800 px-3.5 py-1.5 rounded-full font-black text-white hover:bg-slate-700 shadow">✕ Kapat</button>
-      </div>
-      <div class="flex-1 w-full py-2.5 relative min-h-0"><canvas id="landscapeCanvas"></canvas></div>
     </div>
   </div>
 
@@ -1455,7 +1450,7 @@
 
       const maxReg = getLatestVehicleKm();
       if (!editId && kmVal < maxReg) {
-        if (!confirm(`⚠ Girdiğiniz KM (${kmVal}), kayıtlı en yüksek KM'den (${maxReg}) düşük. Emin misiniz?`)) return;
+        if (!confirm(`⚠️ Girdiğiniz KM (${kmVal}), kayıtlı en yüksek KM'den (${maxReg}) düşük. Emin misiniz?`)) return;
       }
 
       if (kmVal > 0) {
@@ -1902,7 +1897,7 @@
           mSub = kmLeft !== null ? `Kalan: ${kmLeft.toLocaleString('tr-TR')} km` : `Son: ${lastM.date.split("T")[0]}`; 
         }
       }
-      reminders.push({ id: 'maint', name: '🛠️ Bakım', days: mDays, text: mText, sub: mSub, color: mColor });
+      reminders.push({ id: 'maint', name: '🛠 Bakım', days: mDays, text: mText, sub: mSub, color: mColor });
 
       const year = now.getFullYear(); 
       const j31 = new Date(year, 0, 31); 
@@ -1913,7 +1908,7 @@
       else { tMtv = new Date(year + 1, 0, 31); lMtv = "Ocak Taksiti"; }
       const mtvD = Math.ceil((tMtv - now) / 86400000);
       let mtvColor = mtvD <= 15 ? "text-rose-500 font-black" : (mtvD <= 30 ? "text-amber-500 font-bold" : "text-amber-600 font-bold");
-      reminders.push({ id: 'mtv', name: '🏛️️ MTV', days: mtvD, text: `${mtvD} gün kaldı`, sub: lMtv, color: mtvColor });
+      reminders.push({ id: 'mtv', name: '🏛 MTV', days: mtvD, text: `${mtvD} gün kaldı`, sub: lMtv, color: mtvColor });
 
       const kLogs = expenses.filter(e => e.type === "Kasko").sort((a, b) => new Date(b.date) - new Date(a.date));
       let kD = 9999, kT = "Kayıt Yok", kS = "Ekle", kC = "text-slate-400";
@@ -1928,7 +1923,7 @@
         }
         kS = kLogs[0].date.split("T")[0];
       }
-      reminders.push({ id: 'kasko', name: '🛡️️ Kasko', days: kD, text: kT, sub: kS, color: kC });
+      reminders.push({ id: 'kasko', name: '🛡 Kasko', days: kD, text: kT, sub: kS, color: kC });
 
       const tsLogs = expenses.filter(e => e.type === "Trafik Sigortası").sort((a, b) => new Date(b.date) - new Date(a.date));
       let tsD = 9999, tsT = "Kayıt Yok", tsS = "Ekle", tsC = "text-slate-400";
@@ -2127,8 +2122,8 @@
     let monthlyKmChart = null;
     let monthlyFuelChart = null;
     let priceChart = null;
-    let dailyKmChartInstance = null;
     let fuelChartMode = 'tl';
+    let currentLandscapeMode = 'km';
 
     function calculateFuelMetrics(list) {
       const s = list.slice().sort((a, b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
@@ -2206,79 +2201,6 @@
       return { labels: l, kmData: kD, costData: cD, litData: lD, fullKeys };
     }
 
-    function openDailyKmDetails(monthKey) {
-      if (!monthKey) return;
-      document.getElementById("dailyKmModalTitle").innerText = `${monthKey} Günlük KM Analizi`;
-      document.getElementById("dailyKmModalSub").innerText = "O aydaki tüm sayaç hareketleri";
-
-      let allEntries = [];
-      fuels.filter(f => f.date && f.date.startsWith(monthKey)).forEach(f => {
-        allEntries.push({ date: f.date, km: f.km, label: `⛽ ${f.station} (${f.liters} L)` });
-      });
-      odoLogs.filter(o => o.date && o.date.startsWith(monthKey)).forEach(o => {
-        allEntries.push({ date: o.date, km: o.km, label: `📍 ${o.note || 'Sayaç'}` });
-      });
-
-      allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      const logContainer = document.getElementById("dailyKmLogList");
-      logContainer.innerHTML = "";
-
-      if (allEntries.length === 0) {
-        logContainer.innerHTML = `<div class="text-center custom-muted py-3">Bu ay için detaylı günlük sayaç verisi bulunamadı.</div>`;
-      } else {
-        allEntries.forEach(item => {
-          logContainer.innerHTML += `
-            <div class="p-2 theme-sub-box rounded-xl flex justify-between items-center text-[10px]">
-              <div>
-                <span class="font-bold text-slate-200">${formatDateTimeLabel(item.date)}</span>
-                <span class="custom-muted block text-[9px]">${item.label}</span>
-              </div>
-              <span class="font-black text-cyan-500">${item.km.toLocaleString('tr-TR')} KM</span>
-            </div>
-          `;
-        });
-      }
-
-      const ctx = document.getElementById("dailyKmCanvas").getContext("2d");
-      if (dailyKmChartInstance) dailyKmChartInstance.destroy();
-
-      const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
-      const tC = currentTheme === 'light' ? '#334155' : '#94a3b8';
-
-      let grad = ctx.createLinearGradient(0, 0, 0, 150);
-      grad.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-      grad.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
-
-      dailyKmChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: allEntries.length ? allEntries.map(e => e.date.split("T")[0].substring(8)) : ["-"],
-          datasets: [{
-            label: 'Sayaç (KM)',
-            data: allEntries.length ? allEntries.map(e => e.km) : [0],
-            borderColor: '#3b82f6',
-            backgroundColor: grad,
-            fill: true,
-            tension: 0.3,
-            pointBackgroundColor: '#2563eb',
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: gC }, ticks: { color: tC, font: { size: 9, weight: 'bold' } } },
-            y: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } }
-          }
-        }
-      });
-
-      openModalDirectly("dailyKmModal");
-    }
-
     function toggleFuelChartMode(mode) {
       fuelChartMode = mode;
       const btnTl = document.getElementById("chartModeBtnTl");
@@ -2317,13 +2239,6 @@
         options: { 
           responsive: true, 
           maintainAspectRatio: false, 
-          onClick: (evt, elements) => {
-            if (elements.length > 0) {
-              const index = elements[0].index;
-              const selectedKey = m.fullKeys[index];
-              openDailyKmDetails(selectedKey);
-            }
-          },
           plugins: { legend: { display: false } }, 
           scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 9, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } } } 
         } 
@@ -2356,53 +2271,232 @@
       });
     }
 
+    function renderLandscapeMonthlyKm() {
+      document.getElementById("btnReturnToMonthlyKm").classList.add("hidden");
+      document.getElementById("landscapeChartIcon").innerText = "📈";
+      document.getElementById("landscapeChartTitle").innerText = "Aylık Yol Analizi (Tam Ekran)";
+      document.getElementById("landscapeChartSubText").innerText = "Sütunlara tıklayarak o ayın gün gün seyrini açın";
+
+      const fF = fuels.filter(f => selectedYear === "all" || (f.date && f.date.startsWith(selectedYear))); 
+      const cF = calculateFuelMetrics(fF); 
+      const m = processMonthlyData(cF);
+      const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
+      const tC = currentTheme === 'light' ? '#334155' : '#94a3b8';
+      const ctx = document.getElementById("landscapeCanvas").getContext("2d");
+
+      let gradFill = ctx.createLinearGradient(0, 0, 0, 300);
+      gradFill.addColorStop(0, 'rgba(59, 130, 246, 0.85)');
+      gradFill.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+
+      if (landscapeChartInstance) landscapeChartInstance.destroy();
+      landscapeChartInstance = new Chart(ctx, { 
+        type: 'bar', 
+        data: { 
+          labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], 
+          datasets: [{ label: 'Yol (km)', data: m.kmData.length ? m.kmData : [0], backgroundColor: gradFill, borderColor: '#3b82f6', borderWidth: 2, borderRadius: 8 }] 
+        }, 
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          onClick: (evt, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const selectedKey = m.fullKeys[index];
+              renderLandscapeDailyKm(selectedKey);
+            }
+          },
+          plugins: { legend: { labels: { color: tC } } }, 
+          scales: { 
+            x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, 
+            y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } 
+          } 
+        } 
+      });
+
+      const infoBox = document.getElementById("landscapeBottomInfoBox");
+      infoBox.innerHTML = `
+        <div class="text-[11px] font-black text-cyan-500 mb-1">📅 Aylık Döküm Özeti (Detay İçin Tıklayın):</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+          ${m.fullKeys.map((mk, idx) => `
+            <div onclick="renderLandscapeDailyKm('${mk}')" class="p-2 theme-sub-box rounded-lg cursor-pointer hover:border-cyan-500 transition-colors">
+              <span class="custom-muted block font-bold">${mk}</span>
+              <b class="text-blue-500 font-black">${m.kmData[idx].toLocaleString('tr-TR')} KM</b>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderLandscapeDailyKm(monthKey) {
+      document.getElementById("btnReturnToMonthlyKm").classList.remove("hidden");
+      document.getElementById("landscapeChartIcon").innerText = "📅";
+      document.getElementById("landscapeChartTitle").innerText = `${monthKey} - Günlük Katedilen Mesafe`;
+      document.getElementById("landscapeChartSubText").innerText = "Kayıtlar arası net kilometre farkları";
+
+      let allEntries = [];
+      fuels.filter(f => f.date && f.date.startsWith(monthKey)).forEach(f => {
+        allEntries.push({ date: f.date, km: f.km, label: `⛽ ${f.station} (${f.liters} L)` });
+      });
+      odoLogs.filter(o => o.date && o.date.startsWith(monthKey)).forEach(o => {
+        allEntries.push({ date: o.date, km: o.km, label: `📍 ${o.note || 'Sayaç'}` });
+      });
+
+      allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const [yearStr, monthStr] = monthKey.split('-');
+      let prevMDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
+      prevMDate.setDate(prevMDate.getDate() - 1);
+      const prevMKey = prevMDate.toISOString().substring(0, 7);
+
+      let prevBaseKm = null;
+      const allSortedCombined = [...odoLogs, ...fuels].sort((a,b) => new Date(a.date) - new Date(b.date));
+      const lastBefore = allSortedCombined.filter(item => item.date < `${monthKey}-01`).pop();
+      if (lastBefore) prevBaseKm = lastBefore.km;
+
+      let dailyLabels = [];
+      let dailyDistances = [];
+      let lastCounter = prevBaseKm;
+
+      allEntries.forEach(item => {
+        let diff = 0;
+        if (lastCounter !== null) {
+          diff = Math.max(0, item.km - lastCounter);
+        }
+        item.diffKm = diff;
+        lastCounter = item.km;
+
+        dailyLabels.push(item.date.split("T")[0].substring(8) + ". Gün");
+        dailyDistances.push(diff);
+      });
+
+      const ctx = document.getElementById("landscapeCanvas").getContext("2d");
+      const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
+      const tC = currentTheme === 'light' ? '#334155' : '#94a3b8';
+
+      let grad = ctx.createLinearGradient(0, 0, 0, 300);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.85)');
+      grad.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+
+      if (landscapeChartInstance) landscapeChartInstance.destroy();
+      landscapeChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dailyLabels.length ? dailyLabels : ["-"],
+          datasets: [{
+            label: 'Yapılan Yol (km)',
+            data: dailyDistances.length ? dailyDistances : [0],
+            backgroundColor: grad,
+            borderColor: '#0284c7',
+            borderWidth: 2,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: tC } } },
+          scales: {
+            x: { grid: { color: gC }, ticks: { color: tC, font: { size: 10, weight: 'bold' } } },
+            y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } }
+          }
+        }
+      });
+
+      const infoBox = document.getElementById("landscapeBottomInfoBox");
+      if (allEntries.length === 0) {
+        infoBox.innerHTML = `<div class="text-center custom-muted text-[10px] py-2 font-semibold">${monthKey} döneminde kayıtlı sayaç hareketi yok.</div>`;
+      } else {
+        infoBox.innerHTML = `
+          <div class="text-[11px] font-black text-cyan-500 mb-1">📋 ${monthKey} Ayı Günlük Yol Dökümü:</div>
+          <div class="space-y-1">
+            ${allEntries.map(item => `
+              <div class="p-2 theme-sub-box rounded-lg flex justify-between items-center text-[10px]">
+                <div>
+                  <span class="font-bold text-slate-200">${formatDateTimeLabel(item.date)}</span>
+                  <span class="custom-muted ml-1.5">${item.label}</span>
+                </div>
+                <div class="text-right">
+                  <span class="font-black text-emerald-500">+${item.diffKm ? item.diffKm.toLocaleString('tr-TR') : 0} KM</span>
+                  <span class="custom-muted block text-[9px] font-semibold">Sayaç: ${item.km.toLocaleString('tr-TR')} KM</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
     function openLandscapeChart(type) {
+      currentLandscapeMode = type;
       const titleEl = document.getElementById("landscapeChartTitle"); 
       const iconEl = document.getElementById("landscapeChartIcon"); 
+      const returnBtn = document.getElementById("btnReturnToMonthlyKm");
       const ctx = document.getElementById("landscapeCanvas").getContext("2d");
       const fF = fuels.filter(f => selectedYear === "all" || (f.date && f.date.startsWith(selectedYear))); 
       const cF = calculateFuelMetrics(fF); 
       const m = processMonthlyData(cF);
       const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
       const tC = currentTheme === 'light' ? '#334155' : '#94a3b8';
-      
-      let gradFill = ctx.createLinearGradient(0, 0, 0, 300);
-      gradFill.addColorStop(0, 'rgba(59, 130, 246, 0.85)');
-      gradFill.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+      const infoBox = document.getElementById("landscapeBottomInfoBox");
 
-      if (landscapeChartInstance) landscapeChartInstance.destroy();
-      if (type === 'km') { 
-        iconEl.innerText = "📈"; 
-        titleEl.innerText = "Aylık Yol Analizi (Köprü Hesaplamalı)"; 
-        landscapeChartInstance = new Chart(ctx, { 
-          type: 'bar', 
-          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: 'Yol (km)', data: m.kmData.length ? m.kmData : [0], backgroundColor: gradFill, borderColor: '#3b82f6', borderWidth: 2, borderRadius: 8 }] }, 
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
-        }); 
+      returnBtn.classList.add("hidden");
+
+      if (type === 'km') {
+        renderLandscapeMonthlyKm();
       } else if (type === 'fuel') { 
         iconEl.innerText = "⛽"; 
         titleEl.innerText = fuelChartMode === 'tl' ? "Aylık Akaryakıt (₺ Tutar)" : "Aylık Akaryakıt (⛽ Litre)"; 
+        document.getElementById("landscapeChartSubText").innerText = "Aylık harcama ve hacim dökümü";
         const dsVals = fuelChartMode === 'tl' ? (m.costData.length ? m.costData : [0]) : (m.litData.length ? m.litData : [0]);
         let gradFuelModal = ctx.createLinearGradient(0, 0, 0, 300);
         gradFuelModal.addColorStop(0, 'rgba(245, 158, 11, 0.85)');
         gradFuelModal.addColorStop(1, 'rgba(245, 158, 11, 0.2)');
+        
+        if (landscapeChartInstance) landscapeChartInstance.destroy();
         landscapeChartInstance = new Chart(ctx, { 
           type: 'bar', 
-          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
+          data: { labels: m.labels.length ? m.labels : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
+
+        infoBox.innerHTML = `
+          <div class="text-[11px] font-black text-amber-500 mb-1">⛽ Yakıt Verisi:</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+            ${m.fullKeys.map((mk, idx) => `
+              <div class="p-2 theme-sub-box rounded-lg">
+                <span class="custom-muted block font-bold">${mk}</span>
+                <b class="text-amber-500 font-black">${m.costData[idx].toLocaleString('tr-TR')} ₺ • ${m.litData[idx]} L</b>
+              </div>
+            `).join('')}
+          </div>
+        `;
       } else if (type === 'price') { 
         iconEl.innerText = "📊"; 
         titleEl.innerText = "Pompa Litre Fiyatı"; 
+        document.getElementById("landscapeChartSubText").innerText = "Tarih bazlı birim fiyat değişimi";
         let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 300);
         gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.5)');
         gradPriceModal.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
         const sF = cF.slice().sort((a, b) => new Date(a.date) - new Date(b.date)); 
+
+        if (landscapeChartInstance) landscapeChartInstance.destroy();
         landscapeChartInstance = new Chart(ctx, { 
           type: 'line', 
           data: { labels: sF.length ? sF.map(f => `${formatDateTimeLabel(f.date)} (${f.station})`) : ["-"], datasets: [{ label: 'Fiyat (₺/L)', data: sF.length ? sF.map(f => (f.total / f.liters).toFixed(2)) : [0], borderColor: '#0284c7', backgroundColor: gradPriceModal, fill: true, tension: 0.35, pointBackgroundColor: '#0284c7', pointRadius: 5 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 10 } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
+
+        infoBox.innerHTML = `
+          <div class="text-[11px] font-black text-cyan-500 mb-1">📊 Son Yakıt Alımları Birim Fiyatı:</div>
+          <div class="space-y-1">
+            ${sF.slice(-5).reverse().map(f => `
+              <div class="p-2 theme-sub-box rounded-lg flex justify-between items-center text-[10px]">
+                <span>${formatDateTimeLabel(f.date)} • ${f.station}</span>
+                <b class="text-cyan-500">${(f.total / f.liters).toFixed(2)} ₺/L</b>
+              </div>
+            `).join('')}
+          </div>
+        `;
       }
       openModalDirectly("landscapeChartModal");
     }
@@ -2441,7 +2535,6 @@
       openModalDirectly("expertReportModal");
     }
 
-    // AYRIŞTIRILMIŞ SAĞLIK VE SATIŞ RAPORU MOTORU (GÜNCEL SAYAÇ AKTARIMI DÜZELTİLDİ)
     function switchReportMode(mode) {
       activeReportMode = mode;
       const bH = document.getElementById("btnRepHealthMode");
@@ -2450,9 +2543,10 @@
 
       const liveKm = getLatestVehicleKm();
       const now = new Date();
-      document.getElementById("expReportDate").innerText = `Rapor Tarihi: ${now.toLocaleDateString('tr-TR')}`;
+      
+      const expDateEl = document.getElementById("expReportDate");
+      if (expDateEl) expDateEl.innerText = `Rapor Tarihi: ${now.toLocaleDateString('tr-TR')}`;
 
-      // HER İKİ RAPOR İÇİN GÜNCEL KM VE ARAÇ BİLGİSİNİ AKTARMA
       document.getElementById("repCarKm").innerText = liveKm > 0 ? `${liveKm.toLocaleString('tr-TR')} KM` : "0 KM";
       document.getElementById("repCarName").innerText = carProfile.name || "Aracım";
       document.getElementById("repCarDesc").innerText = `${carProfile.desc || 'Model'}`;
@@ -2865,7 +2959,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.2_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.4_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -2877,7 +2971,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5.2_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v5.4_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
