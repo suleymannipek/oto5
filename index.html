@@ -3,33 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OtoTakip Pro v5.1</title>
+  <title>OtoTakip Pro v5.2</title>
   
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  
-  <script>
-    const manifest = {
-      name: "OtoTakip Pro v5.1",
-      short_name: "OtoTakip v5",
-      start_url: "./index.html",
-      display: "standalone",
-      background_color: "#0b1329",
-      theme_color: "#0b1329",
-      icons: [{
-        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='.9em' font-size='70' x='15'>🚗</text></svg>",
-        sizes: "192x192 512x512",
-        type: "image/svg+xml"
-      }]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  </script>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -53,7 +32,6 @@
       --chart-grid: #1e2c4f;
       --reminder-box: rgba(30, 41, 59, 0.5);
       --reminder-border: #334155;
-      --badge-hl: #38bdf8;
       --warn-text: #fbbf24;
       --warn-bg: rgba(245, 158, 11, 0.15);
       --warn-border: rgba(245, 158, 11, 0.35);
@@ -69,10 +47,9 @@
       --sub-box-border: #e2e8f0;
       --input-bg: #f8fafc;
       --nav-bg: rgba(255, 255, 255, 0.98);
-      --chart-grid: #e2e8f0;
+      --chart-grid: #cbd5e1;
       --reminder-box: #e2e8f0;
       --reminder-border: #cbd5e1;
-      --badge-hl: #0284c7;
       --warn-text: #b45309;
       --warn-bg: #fef3c7;
       --warn-border: #fde68a;
@@ -91,7 +68,6 @@
       --chart-grid: #1c1c1c;
       --reminder-box: #141414;
       --reminder-border: #262626;
-      --badge-hl: #38bdf8;
       --warn-text: #fbbf24;
       --warn-bg: rgba(245, 158, 11, 0.15);
       --warn-border: rgba(245, 158, 11, 0.35);
@@ -108,7 +84,7 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       padding-top: var(--sat);
-      padding-bottom: calc(5.2rem + var(--sab));
+      padding-bottom: calc(5.5rem + var(--sab));
       overflow-x: hidden;
     }
     header {
@@ -137,22 +113,18 @@
       color: var(--text-main) !important; 
     }
     .custom-muted { color: var(--text-muted) !important; }
-    .theme-badge { color: var(--badge-hl) !important; }
     .reminder-pill { background-color: var(--reminder-box); border: 1px solid var(--reminder-border); }
     nav { 
       background-color: var(--nav-bg) !important; 
       border-color: var(--card-border) !important; 
-      z-index: 50 !important;
+      z-index: 40 !important;
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
     }
-  
-    #landscapeModalContent {
-      width: 96vw;
-      height: 75vh;
-      max-width: 900px;
+    .modal-backdrop {
+      z-index: 50 !important;
     }
     .history-scroll::-webkit-scrollbar { width: 4px; }
     .history-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
@@ -168,14 +140,13 @@
 </head>
 <body class="min-h-screen">
 
-  <!-- ÜST HEADER -->
   <header class="sticky top-0 z-30 backdrop-blur-xl border-b px-3.5 py-2.5 flex justify-between items-center shadow-lg">
     <div class="flex items-center gap-2.5 min-w-0">
       <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-base shadow-md flex-shrink-0">🚗</div>
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.1 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.2 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -195,8 +166,6 @@
 
     <!-- 1. SEKME: ÖZET -->
     <div id="tabDashboard" class="space-y-3.5">
-      
-      <!-- HATIRLATICI ŞERİDİ -->
       <div id="collapsibleReminderStrip" class="custom-card p-3 shadow-md cursor-pointer border-cyan-800/40" onclick="toggleSubReminderPanel()">
         <div class="flex justify-between items-center text-xs">
           <div class="flex items-center gap-2 truncate">
@@ -264,7 +233,6 @@
         </div>
       </div>
 
-      <!-- KULLANIM YOĞUNLUĞU -->
       <div class="custom-card p-3.5 shadow text-xs">
         <span class="text-[9px] font-black uppercase tracking-wider text-cyan-500">📊 KULLANIM YOĞUNLUĞU</span>
         <div id="statKmEstimateBox" class="text-sm font-black mt-1 tracking-tight">Ayda ortalama: -- km • Yılda tahmini: -- km</div>
@@ -284,29 +252,28 @@
         </div>
       </div>
 
-      <!-- GRAFİKLER AKORDİYONU -->
       <div class="custom-card overflow-hidden shadow">
         <button onclick="toggleChartsAccordion()" class="w-full p-3.5 flex justify-between items-center text-left hover:bg-slate-800/10 transition-all">
           <div class="flex items-center gap-2.5">
             <span class="text-lg text-cyan-500">📈</span>
             <div>
               <h4 class="text-xs font-black">Aylık Yol & Harcama Grafikleri</h4>
-              <p class="text-[10px] custom-muted font-semibold">Aylık yol, yakıt ve fiyat değişim trendleri</p>
+              <p class="text-[10px] custom-muted font-semibold">Sütuna tıklayarak o ayın günlük detayını görün</p>
             </div>
           </div>
           <span id="chartAccordionIcon" class="text-[10px] custom-muted font-bold px-2.5 py-1 rounded-lg custom-card border">▼ Göster</span>
         </button>
 
         <div id="chartsAccordionBody" class="hidden p-3.5 pt-0 space-y-3.5 border-t border-slate-700/40">
-          <div onclick="openLandscapeChart('km')" class="custom-card p-3.5 shadow cursor-pointer hover:border-blue-500/50 transition-all mt-3.5">
+          <div class="custom-card p-3.5 shadow transition-all mt-3.5">
             <div class="flex justify-between items-start mb-2">
               <div>
-                <h4 class="text-xs font-black flex items-center gap-1.5"><span class="text-blue-500">📈</span> Aylık Yol Analizi <span class="text-[10px] text-blue-400 font-normal">⛶ Büyüt</span></h4>
-                <p id="kmDiffSummary" class="text-[10px] custom-muted mt-0.5 font-medium">Önceki ay sonu köprülü hesaplama</p>
+                <h4 class="text-xs font-black flex items-center gap-1.5"><span class="text-blue-500">📈</span> Aylık Yol Analizi</h4>
+                <p id="kmDiffSummary" class="text-[10px] text-cyan-500 mt-0.5 font-bold cursor-pointer" onclick="openLandscapeChart('km')">🔍 Tam Ekran Aç | Sütunlara tıklayarak o ayın günlerini görün</p>
               </div>
-              <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-blue-900/20 text-blue-500 border border-blue-700/40">KM Bar</span>
+              <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-blue-900/20 text-blue-500 border border-blue-700/40">Tıklanabilir</span>
             </div>
-            <div class="h-36 w-full pointer-events-none"><canvas id="monthlyKmCanvas"></canvas></div>
+            <div class="h-40 w-full"><canvas id="monthlyKmCanvas"></canvas></div>
           </div>
 
           <div onclick="openLandscapeChart('fuel')" class="custom-card p-3.5 shadow cursor-pointer hover:border-amber-500/50 transition-all">
@@ -337,7 +304,7 @@
       </div>
     </div>
 
-    <!-- 2. SEKME: YAKIT LİSTESİ -->
+    <!-- 2. SEKME: YAKIT -->
     <div id="tabFuel" class="space-y-3 hidden">
       <div id="fuelRangeBanner" class="custom-card p-3 shadow border-blue-900/40 flex justify-between items-center text-xs">
         <div class="flex items-center gap-2.5">
@@ -385,7 +352,6 @@
         </button>
       </div>
 
-      <!-- KARTLAR & KAMPANYA YÖNETİMİ -->
       <div class="custom-card overflow-hidden shadow border-purple-900/40">
         <button onclick="toggleCardAccordion()" class="w-full p-3 flex justify-between items-center text-left hover:bg-slate-800/10 transition-all">
           <div class="flex items-center gap-2.5">
@@ -416,7 +382,7 @@
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1 text-[10px] font-black">
         <button onclick="filterExpenseCategory('all')" id="expChip_all" class="px-3 py-1.5 rounded-full bg-blue-600 text-white whitespace-nowrap shadow-md">Tümü</button>
         <button onclick="filterExpenseCategory('Periyodik Bakım')" id="expChip_Periyodik Bakım" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛠️ Bakım</button>
-        <button onclick="filterExpenseCategory('Sigorta')" id="expChip_Sigorta" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛡️ Kasko / Sigorta</button>
+        <button onclick="filterExpenseCategory('Sigorta')" id="expChip_Sigorta" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛡️️ Kasko / Sigorta</button>
         <button onclick="filterExpenseCategory('MTV')" id="expChip_MTV" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🏛️ MTV</button>
         <button onclick="filterExpenseCategory('Lastik')" id="expChip_Lastik" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛞 Lastik</button>
         <button onclick="filterExpenseCategory('TÜVTÜRK Muayene')" id="expChip_TÜVTÜRK Muayene" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🔍 Muayene</button>
@@ -425,7 +391,7 @@
       <div id="expenseCardsList" class="space-y-2.5"></div>
     </div>
 
-    <!-- 4. SEKME: BAKIM & LASTİK (TAM KONTRAST) -->
+    <!-- 4. SEKME: BAKIM & LASTİK -->
     <div id="tabTires" class="space-y-3.5 hidden">
       <div class="custom-card p-3.5 shadow">
         <div class="flex gap-1.5 p-1 bg-slate-800/10 rounded-xl mb-3">
@@ -441,7 +407,6 @@
           <button onclick="openTireMountModal()" id="btnMakeActiveSet" class="text-[10px] font-black px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-md">Seti Tak / Değiştir</button>
         </div>
 
-        <!-- BİLGİ PANELİ (THEME-SUB-BOX) -->
         <div class="p-3 theme-sub-box rounded-xl mb-3 space-y-1.5 text-[11px]">
           <div class="flex justify-between">
             <span class="custom-muted font-semibold">Takılma Zamanı:</span>
@@ -496,7 +461,7 @@
       </div>
     </div>
 
-    <!-- 5. SEKME: YEDEK, AYARLAR & RAPORLAR -->
+    <!-- 5. SEKME: YEDEK & AYARLAR -->
     <div id="tabBackup" class="space-y-3.5 hidden">
       <div class="custom-card p-4 shadow space-y-2.5 border-indigo-800/40">
         <h3 class="text-xs font-black text-indigo-400 flex items-center justify-between">
@@ -556,7 +521,6 @@
         </div>
       </div>
 
-      <!-- FONT BOYUTU -->
       <div class="custom-card p-4 shadow space-y-3">
         <h3 class="text-xs font-black flex items-center justify-between">
           <span class="flex items-center gap-1.5"><span>🔤</span> Arayüz Metin Boyutu</span>
@@ -576,7 +540,6 @@
         </div>
       </div>
 
-      <!-- RAPOR & YEDEK -->
       <div class="custom-card p-4 shadow space-y-3">
         <h3 class="text-xs font-black flex justify-between items-center">
           <span>Veri Yedekleme & Raporlama</span>
@@ -605,22 +568,38 @@
           <button onclick="wipeAllDataSecurely()" class="w-full py-2.5 bg-rose-700 hover:bg-rose-600 text-white rounded-xl text-xs font-black shadow-md">🗑 Kalıcı Olarak Sil</button>
         </div>
       </div>
-
-      <div class="text-center pt-2 pb-1">
-        <button onclick="openChangelogModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full custom-card border hover:border-cyan-500/80 transition-all shadow-md">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-[11px] font-black text-cyan-500">OtoTakip Pro v5.1</span>
-          <span class="text-[10px] custom-muted font-bold ml-1">Sürüm Notları ▾</span>
-        </button>
-      </div>
-
     </div>
   </main>
 
-  <!-- MODALLAR (Esnek Flex Yapısı) -->
-  
-  <!-- MANUEL SAYAÇ & AY SONU KÖPRÜ MODALI -->
-  <div id="odoModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+  <!-- GÜNLÜK KM DETAY MODALI -->
+  <div id="dailyKmModal" class="fixed inset-0 bg-black/85 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-md">
+    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="text-lg text-blue-500">📅</span>
+          <div>
+            <h4 class="text-xs font-black" id="dailyKmModalTitle">Günlük KM Analizi</h4>
+            <span class="text-[9px] font-mono text-cyan-500 font-bold" id="dailyKmModalSub">Seçilen Ay Detayı</span>
+          </div>
+        </div>
+        <button onclick="closeModal('dailyKmModal')" class="custom-muted text-base hover:text-white font-black">✕</button>
+      </div>
+
+      <div class="h-44 w-full shrink-0 pt-2"><canvas id="dailyKmCanvas"></canvas></div>
+
+      <div class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs history-scroll border-t border-slate-700/40 pt-2">
+        <h5 class="text-[10px] font-black uppercase text-cyan-500">Günlük Sayaç & Yol Listesi</h5>
+        <div id="dailyKmLogList" class="space-y-1.5"></div>
+      </div>
+
+      <button onclick="closeModal('dailyKmModal')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black shadow-md shrink-0">
+        Kapat
+      </button>
+    </div>
+  </div>
+
+  <!-- SAYAÇ / ODO MODALI -->
+  <div id="odoModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[88vh] flex flex-col">
       <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="odoModalTitle" class="font-black text-xs">📍 Araç Kilometresi Kaydet</h3>
@@ -640,18 +619,17 @@
           </div>
         </div>
 
-        <!-- AY SONU / AY BAŞI KÖPRÜ SEÇENEĞİ -->
         <div class="p-3 rounded-xl theme-sub-box border flex items-start gap-2.5">
           <input type="checkbox" id="mOdoIsBridge" class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0 cursor-pointer" />
           <label for="mOdoIsBridge" class="text-[11px] font-bold cursor-pointer">
             <span class="text-blue-500 font-black block">🌉 Bu KM ay sonu olup diğer ay için başlangıç (köprü) olsun</span>
-            <span class="custom-muted text-[10px] block font-medium mt-0.5">İşaretlendiğinde, takip eden ayın yol grafiği doğrudan bu sayaç değerinden hesaplanmaya başlar.</span>
+            <span class="custom-muted text-[10px] block font-medium mt-0.5">İşaretlendiğinde, takip eden ayın yol grafiği bu sayaç değerinden başlar.</span>
           </label>
         </div>
 
         <div>
           <label class="custom-muted text-[10px] font-bold">Açıklama / Not</label>
-          <input type="text" id="mOdoNote" placeholder="örn: 30 Eylül Ay Sonu Kapanışı" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" />
+          <input type="text" id="mOdoNote" placeholder="örn: Ay sonu sayaç kontrolü" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" />
         </div>
 
         <div class="flex gap-2.5 pt-2 shrink-0 border-t border-slate-700/40">
@@ -662,8 +640,8 @@
     </div>
   </div>
 
-  <!-- YAKIT MODALI (THUMBNAIL ÖNİZLEMELİ) -->
-  <div id="fuelModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+  <!-- YAKIT MODALI -->
+  <div id="fuelModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[88vh] flex flex-col shadow-2xl">
       <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="fuelModalTitle" class="font-black text-xs">⛽ Yeni Yakıt Alımı</h3>
@@ -721,8 +699,8 @@
     </div>
   </div>
 
-  <!-- GİDER & BAKIM MODALI -->
-  <div id="expenseModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+  <!-- GİDER & SERVİS MODALI -->
+  <div id="expenseModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[88vh] flex flex-col shadow-2xl">
       <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="expModalTitle" class="font-black text-xs">🛠️ Yeni Gider & Servis Kaydı</h3>
@@ -807,8 +785,8 @@
     </div>
   </div>
 
-  <!-- AYRIŞTIRILMIŞ SAĞLIK VE EKSPERTİZ RAPORU (TAM OKUNABİLİR RENKLER) -->
-  <div id="expertReportModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
+  <!-- AYRIŞTIRILMIŞ SAĞLIK VE SATIŞ RAPORU -->
+  <div id="expertReportModal" class="fixed inset-0 bg-black/90 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-md">
     <div class="custom-card max-w-lg w-full rounded-2xl p-4 space-y-3 border shadow-2xl max-h-[88vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2.5 shrink-0">
         <div class="flex items-center gap-2.5">
@@ -854,41 +832,8 @@
     </div>
   </div>
 
-  <!-- SÜRÜM NOTLARI MODALI -->
-  <div id="changelogModal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
-    <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border shadow-xl max-h-[85vh] flex flex-col">
-      <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">🚀</span>
-          <div>
-            <h4 class="text-xs font-black">Sürüm & Geliştirme Notları</h4>
-            <span class="text-[9px] font-mono text-cyan-500 font-bold">OtoTakip Pro v5.1</span>
-          </div>
-        </div>
-        <button onclick="closeModal('changelogModal')" class="custom-muted text-base hover:text-white font-black">✕</button>
-      </div>
-
-      <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs history-scroll">
-        <div class="p-3 rounded-xl theme-sub-box space-y-2">
-          <span class="font-black text-cyan-500 text-[11px] block">OtoTakip Pro v5.1 Sürümü:</span>
-          <ul class="text-[10px] custom-muted space-y-1.5 list-disc list-inside font-semibold">
-            <li><b>Aylık KM Köprüleme (Bridge):</b> Ay sonlarında girilen sayaç değeri diğer aya aktarılıyor ve grafikler ardışık hesaplanıyor.</li>
-            <li><b>Gündüz Teması Tam Kontrast:</b> Aydınlık modda silikleşen metinler, rapor panelleri ve lastik uyarı kutuları netleştirildi.</li>
-            <li><b>Ayrıştırılmış Raporlar:</b> Araç Sağlık Raporu en kapsamlı teknik takibi yaparken, Satış Raporu lastikleri hariç tutarak garanti/servis odaklı sunuluyor.</li>
-            <li><b>Esnek Flex Modal Mimarisi:</b> Alt menü çakışmaları tamamen çözüldü, tüm pencerelerde alt butonlar erişilebilir.</li>
-            <li><b>Arayüz Düzenlemeleri:</b> Font boyutu butonları (Küçük, Orta, Büyük) belirginleştirildi; rozet ve yıl seçici ayrıldı.</li>
-          </ul>
-        </div>
-      </div>
-
-      <button onclick="closeModal('changelogModal')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black shadow-md shrink-0">
-        Kapat
-      </button>
-    </div>
-  </div>
-
-  <!-- DİĞER MODALLAR (LASTİK, KART, DÖKÜMAN, GRAFİK) -->
-  <div id="cardStatementModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
+  <!-- DİĞER YARDIMCI MODALLAR -->
+  <div id="cardStatementModal" class="fixed inset-0 bg-black/90 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-md">
     <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 border shadow-2xl max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2.5 shrink-0">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -940,7 +885,7 @@
     </div>
   </div>
 
-  <div id="rewardModal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
+  <div id="rewardModal" class="fixed inset-0 bg-black/85 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-md">
     <div class="custom-card max-w-xs w-full rounded-2xl p-4 space-y-3 border shadow-xl max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0">
         <h4 id="rewardModalTitle" class="text-xs font-black">🎁 Bonus / İade Ekle</h4>
@@ -959,7 +904,7 @@
     </div>
   </div>
 
-  <div id="tireMountModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+  <div id="tireMountModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 class="font-black text-xs">🛞 Lastik Seti Tak / Değiştir</h3>
@@ -985,7 +930,7 @@
     </div>
   </div>
 
-  <div id="tireActionModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 hidden backdrop-blur-sm">
+  <div id="tireActionModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[85vh] flex flex-col shadow-2xl">
       <div class="flex justify-between items-center mb-2.5 shrink-0 border-b border-slate-700/40 pb-2">
         <h3 id="tireActionModalTitle" class="font-black text-xs">🛞 Lastik İşlemleri</h3>
@@ -1026,7 +971,7 @@
     </div>
   </div>
 
-  <div id="docViewerModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden backdrop-blur-md">
+  <div id="docViewerModal" class="fixed inset-0 bg-black/90 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-md">
     <div class="custom-card max-w-sm w-full rounded-2xl p-4 space-y-3 shadow-2xl max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-slate-700/50 pb-2 shrink-0"><h4 class="text-xs font-black">📄 Belge / Fiş</h4><button onclick="closeModal('docViewerModal')" class="custom-muted text-lg font-black">✕</button></div>
       <div id="docViewerContent" class="flex-1 overflow-auto flex flex-col items-center justify-center py-2"></div>
@@ -1034,8 +979,8 @@
     </div>
   </div>
 
-  <div id="landscapeChartModal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-2 hidden backdrop-blur-md">
-    <div id="landscapeModalContent" class="custom-card rounded-3xl p-4 flex flex-col justify-between border shadow-2xl">
+  <div id="landscapeChartModal" class="fixed inset-0 bg-black/95 modal-backdrop flex items-center justify-center p-2 hidden backdrop-blur-md">
+    <div id="landscapeModalContent" class="custom-card rounded-3xl p-4 flex flex-col justify-between border shadow-2xl w-[96vw] h-[75vh] max-w-[900px]">
       <div class="flex justify-between items-center pb-2.5 border-b border-slate-700/40">
         <div class="flex items-center gap-2.5"><span class="text-lg" id="landscapeChartIcon">📈</span><h3 id="landscapeChartTitle" class="text-xs font-black">Grafik Detayı</h3></div>
         <button onclick="closeLandscapeChart()" class="text-xs bg-slate-800 px-3.5 py-1.5 rounded-full font-black text-white hover:bg-slate-700 shadow">✕ Kapat</button>
@@ -1045,7 +990,7 @@
   </div>
 
   <!-- ALT MENÜ -->
-  <nav class="backdrop-blur-2xl border-t pb-1.5 shadow-2xl">
+  <nav id="bottomNavigationBar" class="backdrop-blur-2xl border-t pb-1.5 shadow-2xl">
     <div class="flex justify-around items-center max-w-md mx-auto pt-1.5">
       <button type="button" onclick="switchTab('dashboard')" id="navDashboard" class="flex flex-col items-center py-1.5 px-3 rounded-2xl bg-blue-600/20 text-cyan-500 font-black transition-all cursor-pointer"><span class="text-xl">📊</span><span class="text-[9px] mt-0.5 tracking-wide">Özet</span></button>
       <button type="button" onclick="switchTab('fuel')" id="navFuel" class="flex flex-col items-center py-1.5 px-3 rounded-2xl custom-muted font-medium transition-all cursor-pointer"><span class="text-xl">⛽</span><span class="text-[9px] mt-0.5 tracking-wide">Yakıt</span></button>
@@ -1057,8 +1002,8 @@
 
   <script>
     const themes = ["midnight", "light", "oled"];
-    const themeMeta = { midnight: { name: "Mavi", icon: "🔵", color: "#0b1329" }, light: { name: "Gündüz", icon: "☀️️", color: "#f1f5f9" }, oled: { name: "OLED", icon: "🌑", color: "#000000" } };
-    let currentTheme = localStorage.getItem("ototakip_theme") || localStorage.getItem("oto_theme") || "midnight";
+    const themeMeta = { midnight: { name: "Mavi", icon: "🔵", color: "#0b1329" }, light: { name: "Gündüz", icon: "☀️", color: "#f1f5f9" }, oled: { name: "OLED", icon: "🌑", color: "#000000" } };
+    let currentTheme = localStorage.getItem("ototakip_theme") || "midnight";
 
     function applyTheme(t) {
       currentTheme = t; document.documentElement.setAttribute("data-theme", t); localStorage.setItem("ototakip_theme", t);
@@ -1124,10 +1069,10 @@
       return defaultValue;
     }
 
-    let fuels = getPersistedData("ototakip_fuels", ["oto_fuels_v8", "oto_fuels_v7", "oto_fuels_v6", "oto_fuels_v5"], []);
-    let odoLogs = getPersistedData("ototakip_odologs", ["oto_odologs_v8", "oto_odologs_v7", "oto_odologs_v6"], []);
-    let expenses = getPersistedData("ototakip_expenses", ["oto_expenses_v8", "oto_expenses_v7", "oto_expenses_v6", "oto_expenses_v5"], []);
-    let manualOdo = parseFloat(localStorage.getItem("ototakip_manual_odo") || localStorage.getItem("oto_manual_odo")) || 0;
+    let fuels = getPersistedData("ototakip_fuels", ["oto_fuels_v8", "oto_fuels_v7"], []);
+    let odoLogs = getPersistedData("ototakip_odologs", ["oto_odologs_v8", "oto_odologs_v7"], []);
+    let expenses = getPersistedData("ototakip_expenses", ["oto_expenses_v8", "oto_expenses_v7"], []);
+    let manualOdo = parseFloat(localStorage.getItem("ototakip_manual_odo")) || 0;
 
     const defaultPaymentMethods = ["Nakit", "Bonus", "Maximum", "World", "Axess", "Bankkart"];
     let customPaymentMethods = getPersistedData("ototakip_payment_methods", [], defaultPaymentMethods);
@@ -1222,7 +1167,7 @@
         `).join('');
       }
 
-      document.getElementById("cardStatementModal").classList.remove("hidden");
+      openModalDirectly("cardStatementModal");
     }
 
     function openRewardModalFromStatement() {
@@ -1232,7 +1177,7 @@
       document.getElementById("rwDate").value = getNowLocalISO();
       document.getElementById("rwAmount").value = "";
       document.getElementById("rwNote").value = "";
-      document.getElementById("rewardModal").classList.remove("hidden");
+      openModalDirectly("rewardModal");
     }
 
     function saveRewardEntry(e) {
@@ -1318,7 +1263,7 @@
       summer: { sol_on: { status: "Sorunsuz", history: [] }, sag_on: { status: "Sorunsuz", history: [] }, sol_arka: { status: "Sorunsuz", history: [] }, sag_arka: { status: "Sorunsuz", history: [] }, mountedKm: 0, mountedDate: "" },
       winter: { sol_on: { status: "Sorunsuz", history: [] }, sag_on: { status: "Sorunsuz", history: [] }, sol_arka: { status: "Sorunsuz", history: [] }, sag_arka: { status: "Sorunsuz", history: [] }, mountedKm: 0, mountedDate: "" }
     };
-    let tireData = getPersistedData("ototakip_tires", ["oto_tires_v8", "oto_tires_v7", "oto_tires_v6", "oto_tires_v5"], defaultTireData);
+    let tireData = getPersistedData("ototakip_tires", ["oto_tires_v8", "oto_tires_v7"], defaultTireData);
 
     ["summer", "winter"].forEach(season => {
       if (!tireData[season]) tireData[season] = defaultTireData[season];
@@ -1329,7 +1274,7 @@
     });
 
     const defaultProfile = { name: "Aracım", desc: "", fuelTank: 50, hasLpg: false, lpgTank: 40 };
-    let carProfile = getPersistedData("ototakip_profile", ["oto_profile_v2", "oto_profile_v1"], defaultProfile);
+    let carProfile = getPersistedData("ototakip_profile", ["oto_profile_v2"], defaultProfile);
     let lastBackupTimestamp = localStorage.getItem("ototakip_last_backup") || null;
 
     function persistAllData() {
@@ -1454,7 +1399,6 @@
         persistAllData();
         persistPaymentMethods();
         localStorage.removeItem("ototakip_manual_odo");
-        localStorage.removeItem("oto_manual_odo");
         document.getElementById("wipeConfirmInput").value = ""; 
         selectedYear = currentSystemYear; 
         localStorage.setItem("ototakip_selected_year", currentSystemYear); 
@@ -1462,6 +1406,20 @@
         renderAll(); 
         alert("Sıfırlandı!"); 
         switchTab("dashboard");
+      }
+    }
+
+    // MODAL YÖNETİMİ
+    function openModalDirectly(id) {
+      document.getElementById(id).classList.remove("hidden");
+      document.getElementById("bottomNavigationBar").style.pointerEvents = "none";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add("hidden");
+      const anyOpen = Array.from(document.querySelectorAll('.modal-backdrop')).some(el => !el.classList.contains('hidden'));
+      if (!anyOpen) {
+        document.getElementById("bottomNavigationBar").style.pointerEvents = "auto";
       }
     }
 
@@ -1485,7 +1443,7 @@
         document.getElementById("odoModalTitle").innerText = "📍 Araç Kilometresi Kaydet";
       }
       document.getElementById("odoAnomalyWarning").classList.add("hidden");
-      document.getElementById("odoModal").classList.remove("hidden");
+      openModalDirectly("odoModal");
     }
 
     function saveManualOdo(e) {
@@ -1498,7 +1456,7 @@
 
       const maxReg = getLatestVehicleKm();
       if (!editId && kmVal < maxReg) {
-        if (!confirm(`⚠️ Girdiğiniz KM (${kmVal}), kayıtlı en yüksek KM'den (${maxReg}) düşük. Emin misiniz?`)) return;
+        if (!confirm(`⚠️️ Girdiğiniz KM (${kmVal}), kayıtlı en yüksek KM'den (${maxReg}) düşük. Emin misiniz?`)) return;
       }
 
       if (kmVal > 0) {
@@ -1679,7 +1637,7 @@
       document.getElementById("eIncludeInExpert").checked = true;
       populatePaymentSelects();
       toggleExpenseFields();
-      document.getElementById("expenseModal").classList.remove("hidden");
+      openModalDirectly("expenseModal");
     }
 
     function editExpense(id) {
@@ -1703,7 +1661,7 @@
         document.getElementById("eDocPreviewBox").classList.add("hidden");
       }
       toggleExpenseFields();
-      document.getElementById("expenseModal").classList.remove("hidden");
+      openModalDirectly("expenseModal");
     }
 
     function saveExpense(e) {
@@ -2065,7 +2023,7 @@
       document.getElementById("tmDate").value = getNowLocalISO();
       const km = getLatestVehicleKm(); 
       document.getElementById("tmKm").value = km > 0 ? km : "";
-      document.getElementById("tireMountModal").classList.remove("hidden");
+      openModalDirectly("tireMountModal");
     }
 
     function saveTireMount(e) {
@@ -2105,7 +2063,7 @@
       const hist = tireData[activeSeasonTab][pos].history || [];
       const listDiv = document.getElementById("tireHistoryList");
       listDiv.innerHTML = hist.length === 0 ? '<div class="text-[10px] custom-muted text-center py-2 font-semibold">Kayıtlı işlem yok.</div>' : hist.map(h => `<div class="theme-sub-box p-2 rounded-xl flex justify-between items-center"><div class="truncate w-2/3"><div class="font-black text-cyan-500 text-[10px] truncate">${h.action}</div><div class="text-[9px] custom-muted truncate font-medium">${formatDateTimeLabel(h.date)}</div></div><div class="text-right text-[10px] font-black text-emerald-500">${h.cost > 0 ? h.cost+' ₺' : '-'}</div></div>`).join('');
-      document.getElementById("tireActionModal").classList.remove("hidden");
+      openModalDirectly("tireActionModal");
     }
 
     function saveTireAction(e) {
@@ -2170,6 +2128,7 @@
     let monthlyKmChart = null;
     let monthlyFuelChart = null;
     let priceChart = null;
+    let dailyKmChartInstance = null;
     let fuelChartMode = 'tl';
 
     function calculateFuelMetrics(list) {
@@ -2192,10 +2151,8 @@
       return r;
     }
 
-    // AY SONU / AY BAŞI KÖPRÜ DESTEKLİ GELİŞMİŞ AYLIK VERİ HESAPLAMA
     function processMonthlyData(calcFuels) {
       let map = {};
-
       const allSortedOdo = odoLogs.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
       const allSortedFuels = fuels.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -2216,7 +2173,6 @@
         map[k].max = Math.max(map[k].max, o.km);
       });
 
-      // Aylar arası köprü (Önceki ayın son KM'sini bir sonraki ayın başlangıcı yapma)
       const sortedMonths = Object.keys(map).sort();
       sortedMonths.forEach(mKey => {
         const [yearStr, monthStr] = mKey.split('-');
@@ -2224,23 +2180,22 @@
         prevMDate.setDate(prevMDate.getDate() - 1);
         const prevMKey = prevMDate.toISOString().substring(0, 7);
 
-        // Önceki ayda girilmiş 'bridge' var mı?
         const prevBridge = allSortedOdo.filter(o => o.isBridge && o.date.startsWith(prevMKey)).pop();
         if (prevBridge) {
           map[mKey].startBridgeKm = prevBridge.km;
         } else if (map[prevMKey]) {
           map[mKey].startBridgeKm = map[prevMKey].max;
         } else {
-          // Önceki ayın en son yakıt/sayaç kaydını bul
           const lastBefore = [...allSortedOdo, ...allSortedFuels].filter(item => item.date < `${mKey}-01`).sort((a,b) => new Date(a.date) - new Date(b.date)).pop();
           if (lastBefore) map[mKey].startBridgeKm = lastBefore.km;
         }
       });
 
-      let l = [], kD = [], cD = [], lD = [];
+      let l = [], kD = [], cD = [], lD = [], fullKeys = [];
 
       for (let i = 0; i < sortedMonths.length; i++) {
         const mKey = sortedMonths[i];
+        fullKeys.push(mKey);
         l.push(mKey.substring(5));
         cD.push(Math.round(map[mKey].tot));
         lD.push(parseFloat(map[mKey].lit.toFixed(1)));
@@ -2249,7 +2204,81 @@
         let d = map[mKey].max - baseKm;
         kD.push(Math.max(d, 0));
       }
-      return { labels: l, kmData: kD, costData: cD, litData: lD };
+      return { labels: l, kmData: kD, costData: cD, litData: lD, fullKeys };
+    }
+
+    // GÜNLÜK KM DETAY GRAFİĞİNİ AÇMA
+    function openDailyKmDetails(monthKey) {
+      if (!monthKey) return;
+      document.getElementById("dailyKmModalTitle").innerText = `${monthKey} Günlük KM Analizi`;
+      document.getElementById("dailyKmModalSub").innerText = "O aydaki tüm sayaç hareketleri";
+
+      let allEntries = [];
+      fuels.filter(f => f.date && f.date.startsWith(monthKey)).forEach(f => {
+        allEntries.push({ date: f.date, km: f.km, label: `⛽ ${f.station} (${f.liters} L)` });
+      });
+      odoLogs.filter(o => o.date && o.date.startsWith(monthKey)).forEach(o => {
+        allEntries.push({ date: o.date, km: o.km, label: `📍 ${o.note || 'Sayaç'}` });
+      });
+
+      allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const logContainer = document.getElementById("dailyKmLogList");
+      logContainer.innerHTML = "";
+
+      if (allEntries.length === 0) {
+        logContainer.innerHTML = `<div class="text-center custom-muted py-3">Bu ay için detaylı günlük sayaç verisi bulunamadı.</div>`;
+      } else {
+        allEntries.forEach(item => {
+          logContainer.innerHTML += `
+            <div class="p-2 theme-sub-box rounded-xl flex justify-between items-center text-[10px]">
+              <div>
+                <span class="font-bold text-slate-200">${formatDateTimeLabel(item.date)}</span>
+                <span class="custom-muted block text-[9px]">${item.label}</span>
+              </div>
+              <span class="font-black text-cyan-500">${item.km.toLocaleString('tr-TR')} KM</span>
+            </div>
+          `;
+        });
+      }
+
+      const ctx = document.getElementById("dailyKmCanvas").getContext("2d");
+      if (dailyKmChartInstance) dailyKmChartInstance.destroy();
+
+      const gC = currentTheme === 'light' ? '#cbd5e1' : '#1e2c4f'; 
+      const tC = currentTheme === 'light' ? '#334155' : '#94a3b8';
+
+      let grad = ctx.createLinearGradient(0, 0, 0, 150);
+      grad.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+      grad.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+      dailyKmChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: allEntries.length ? allEntries.map(e => e.date.split("T")[0].substring(8)) : ["-"],
+          datasets: [{
+            label: 'Sayaç (KM)',
+            data: allEntries.length ? allEntries.map(e => e.km) : [0],
+            borderColor: '#3b82f6',
+            backgroundColor: grad,
+            fill: true,
+            tension: 0.3,
+            pointBackgroundColor: '#2563eb',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: gC }, ticks: { color: tC, font: { size: 9, weight: 'bold' } } },
+            y: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } }
+          }
+        }
+      });
+
+      openModalDirectly("dailyKmModal");
     }
 
     function toggleFuelChartMode(mode) {
@@ -2277,7 +2306,8 @@
       const tC = currentTheme === 'light' ? '#334155' : '#94a3b8'; 
       const m = processMonthlyData(calcFuels);
 
-      const ctxKm = document.getElementById("monthlyKmCanvas").getContext("2d");
+      const canvasKm = document.getElementById("monthlyKmCanvas");
+      const ctxKm = canvasKm.getContext("2d");
       let gradKm = ctxKm.createLinearGradient(0, 0, 0, 150);
       gradKm.addColorStop(0, 'rgba(59, 130, 246, 0.85)');
       gradKm.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
@@ -2286,7 +2316,19 @@
       monthlyKmChart = new Chart(ctxKm, { 
         type: 'bar', 
         data: { labels: m.labels.length ? m.labels : ["-"], datasets: [{ data: m.kmData.length ? m.kmData : [0], backgroundColor: gradKm, borderColor: '#3b82f6', borderWidth: 1, borderRadius: 8 }] }, 
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 9, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } } } } 
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          onClick: (evt, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const selectedKey = m.fullKeys[index];
+              openDailyKmDetails(selectedKey);
+            }
+          },
+          plugins: { legend: { display: false } }, 
+          scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 9, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } } } 
+        } 
       });
 
       const ctxFuel = document.getElementById("monthlyFuelCanvas").getContext("2d");
@@ -2317,7 +2359,6 @@
     }
 
     function openLandscapeChart(type) {
-      const modal = document.getElementById("landscapeChartModal"); 
       const titleEl = document.getElementById("landscapeChartTitle"); 
       const iconEl = document.getElementById("landscapeChartIcon"); 
       const ctx = document.getElementById("landscapeCanvas").getContext("2d");
@@ -2365,12 +2406,12 @@
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 10 } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
       }
-      modal.classList.remove("hidden");
+      openModalDirectly("landscapeChartModal");
     }
 
     function closeLandscapeChart() { 
       if (landscapeChartInstance) { landscapeChartInstance.destroy(); landscapeChartInstance = null; } 
-      document.getElementById("landscapeChartModal").classList.add("hidden"); 
+      closeModal("landscapeChartModal");
     }
 
     function updateRangeEstimate(avgCons) {
@@ -2399,7 +2440,7 @@
 
     function openReportModal() {
       switchReportMode('health');
-      document.getElementById("expertReportModal").classList.remove("hidden");
+      openModalDirectly("expertReportModal");
     }
 
     // AYRIŞTIRILMIŞ SAĞLIK VE SATIŞ RAPORU MOTORU
@@ -2434,9 +2475,13 @@
         const setObj = tireData[activeSet];
         let tDist = (liveKm >= (setObj.mountedKm || 0)) ? liveKm - (setObj.mountedKm || 0) : 0;
 
+        const kaskoLast = expenses.filter(e => e.type === "Kasko").sort((a,b) => new Date(b.date) - new Date(a.date))[0];
+        const trafikLast = expenses.filter(e => e.type === "Trafik Sigortası").sort((a,b) => new Date(b.date) - new Date(a.date))[0];
+        const muayeneLast = expenses.filter(e => e.type === "TÜVTÜRK Muayene").sort((a,b) => new Date(b.date) - new Date(a.date))[0];
+
         dynamicContainer.innerHTML = `
           <div class="p-3.5 rounded-xl theme-sub-box space-y-2">
-            <h4 class="text-[11px] font-black text-amber-500 flex items-center gap-1.5"><span>🛠️</span> Periyodik Bakım Vadeleri (Teknik Takip)</h4>
+            <h4 class="text-[11px] font-black text-amber-500 flex items-center gap-1.5"><span>🛠️</span> Periyodik Bakım Vadeleri (Tam Takip)</h4>
             <div class="grid grid-cols-2 gap-2.5 text-[10px]">
               <div><span class="custom-muted block text-[9px] font-bold">Son Bakım Tarihi</span><b class="font-bold">${lastMDate}</b></div>
               <div><span class="custom-muted block text-[9px] font-bold">Son Bakım KM</span><b class="font-bold">${lastMKm}</b></div>
@@ -2446,11 +2491,35 @@
           </div>
 
           <div class="p-3.5 rounded-xl theme-sub-box space-y-2">
-            <h4 class="text-[11px] font-black text-cyan-500 flex items-center gap-1.5"><span>🛞</span> Aktif Lastik Sağlığı & Rotasyon</h4>
-            <div class="text-[10px] space-y-1.5">
+            <h4 class="text-[11px] font-black text-blue-500 flex items-center gap-1.5"><span>🏛️</span> Yasal Zorunluluklar & Poliçeler</h4>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-2 rounded-lg theme-sub-box">
+                <span class="custom-muted block text-[9px] font-bold">Kasko Durumu</span>
+                <b class="font-bold text-slate-200">${kaskoLast ? formatDateTimeLabel(kaskoLast.date) : 'Poliçe Eklenmedi'}</b>
+              </div>
+              <div class="p-2 rounded-lg theme-sub-box">
+                <span class="custom-muted block text-[9px] font-bold">Trafik Sigortası</span>
+                <b class="font-bold text-slate-200">${trafikLast ? formatDateTimeLabel(trafikLast.date) : 'Poliçe Eklenmedi'}</b>
+              </div>
+              <div class="p-2 rounded-lg theme-sub-box col-span-2">
+                <span class="custom-muted block text-[9px] font-bold">TÜVTÜRK Muayene</span>
+                <b class="font-bold text-slate-200">${muayeneLast ? formatDateTimeLabel(muayeneLast.date) : 'Kayıt Yok'}</b>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl theme-sub-box space-y-2">
+            <h4 class="text-[11px] font-black text-cyan-500 flex items-center gap-1.5"><span>🛞</span> Lastik Sağlığı & Tekerlek Detayları</h4>
+            <div class="text-[10px] space-y-1 mb-2">
               <div class="flex justify-between"><span class="custom-muted font-semibold">Takılı Set:</span><b class="font-bold">${activeSet === "summer" ? "☀️ Yazlık Set" : "❄️ Kışlık Set"}</b></div>
               <div class="flex justify-between"><span class="custom-muted font-semibold">Sezon Yapılan Yol:</span><b class="font-bold">${tDist.toLocaleString('tr-TR')} km</b></div>
               <div class="flex justify-between"><span class="custom-muted font-semibold">Rotasyon Durumu:</span><b class="${tDist >= 10000 ? 'text-amber-500 font-black' : 'text-emerald-500 font-bold'}">${tDist >= 10000 ? 'Rotasyon Vakti Geldi!' : 'Normal'}</b></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-1.5 rounded theme-sub-box">Sol Ön: <b>${setObj.sol_on.status}</b></div>
+              <div class="p-1.5 rounded theme-sub-box">Sağ Ön: <b>${setObj.sag_on.status}</b></div>
+              <div class="p-1.5 rounded theme-sub-box">Sol Arka: <b>${setObj.sol_arka.status}</b></div>
+              <div class="p-1.5 rounded theme-sub-box">Sağ Arka: <b>${setObj.sag_arka.status}</b></div>
             </div>
           </div>
         `;
@@ -2458,11 +2527,14 @@
         bR.className = "flex-1 py-2 text-[11px] font-black rounded-lg bg-emerald-600 text-white shadow";
         bH.className = "flex-1 py-2 text-[11px] font-black rounded-lg custom-muted hover:text-white";
 
-        const expertRecords = expenses.filter(e => e.includeInExpert !== false).sort((a,b) => new Date(b.date) - new Date(a.date));
+        const expertRecords = expenses.filter(e => {
+          const isNotOwnerExpense = !e.type.includes("Kasko") && !e.type.includes("Sigortası") && !e.type.includes("MTV") && !e.type.includes("Lastik");
+          return e.includeInExpert !== false && isNotOwnerExpense;
+        }).sort((a,b) => new Date(b.date) - new Date(a.date));
         
         let serviceListHtml = "";
         if (expertRecords.length === 0) {
-          serviceListHtml = `<div class="p-2 text-center custom-muted text-[10px] font-semibold">Kayıtlı servis/onarım bulunmuyor.</div>`;
+          serviceListHtml = `<div class="p-2 text-center custom-muted text-[10px] font-semibold">Kayıtlı mekanik servis/onarım bulunmuyor.</div>`;
         } else {
           serviceListHtml = expertRecords.map(item => {
             const isFree = (item.amount === 0 || item.amount === "0");
@@ -2483,28 +2555,21 @@
         }
 
         let totalFuel = 0; fuels.forEach(f => totalFuel += f.total);
-        let fixedExp = 0, varExp = 0;
-        expenses.forEach(e => {
-          if (e.type.includes("MTV") || e.type.includes("Kasko") || e.type.includes("Sigortası") || e.type.includes("Muayene")) fixedExp += e.amount;
-          else varExp += e.amount;
-        });
+        let mechMaintExp = 0;
+        expertRecords.forEach(e => mechMaintExp += e.amount);
 
         dynamicContainer.innerHTML = `
           <div class="p-3.5 rounded-xl theme-sub-box space-y-2">
-            <h4 class="text-[11px] font-black text-emerald-500 flex items-center gap-1.5"><span>🛡️</span> Yetkili Servis & Onarım Geçmişi</h4>
-            <p class="text-[9px] custom-muted font-semibold">Alıcıya sunulabilecek şeffaf garanti, bakım ve onarım dökümü:</p>
+            <h4 class="text-[11px] font-black text-emerald-500 flex items-center gap-1.5"><span>🛡️</span> Yetkili Servis & Mekanik Onarım Geçmişi</h4>
+            <p class="text-[9px] custom-muted font-semibold">Alıcıya sunulacak şeffaf periyodik bakım ve garanti onarım dökümü:</p>
             <div class="space-y-2 pt-1">${serviceListHtml}</div>
           </div>
 
           <div class="p-3.5 rounded-xl theme-sub-box space-y-2">
-            <h4 class="text-[11px] font-black text-pink-500 flex items-center gap-1.5"><span>💰</span> Toplam Sahiplik & Harcama Özeti</h4>
+            <h4 class="text-[11px] font-black text-pink-500 flex items-center gap-1.5"><span>💰</span> Bakım & Yakıt Masraf Özeti</h4>
             <div class="grid grid-cols-2 gap-2.5 text-[10px]">
-              <div><span class="custom-muted block text-[9px] font-bold">Toplam Yakıt</span><b class="font-bold">₺${Math.round(totalFuel).toLocaleString('tr-TR')}</b></div>
-              <div><span class="custom-muted block text-[9px] font-bold">Sabit Giderler</span><b class="font-bold">₺${Math.round(fixedExp).toLocaleString('tr-TR')}</b></div>
-              <div class="col-span-2 pt-1 border-t border-slate-700/40 flex justify-between items-center">
-                <span class="custom-muted text-[9px] font-bold">Genel Toplam Sahiplik Maliyeti:</span>
-                <span class="font-black text-pink-500 text-xs">₺${Math.round(totalFuel + fixedExp + varExp).toLocaleString('tr-TR')}</span>
-              </div>
+              <div><span class="custom-muted block text-[9px] font-bold">Toplam Yakıt Tüketimi</span><b class="font-bold">₺${Math.round(totalFuel).toLocaleString('tr-TR')}</b></div>
+              <div><span class="custom-muted block text-[9px] font-bold">Mekanik Servis Gideri</span><b class="font-bold">₺${Math.round(mechMaintExp).toLocaleString('tr-TR')}</b></div>
             </div>
           </div>
         `;
@@ -2649,7 +2714,7 @@
       document.getElementById("fuelAnomalyWarning").classList.add("hidden");
       populatePaymentSelects();
       updateLpgVisibilityInApp(); 
-      document.getElementById("fuelModal").classList.remove("hidden"); 
+      openModalDirectly("fuelModal"); 
     }
 
     function editFuel(id) { 
@@ -2677,7 +2742,7 @@
       document.getElementById("fuelModalTitle").innerText = "Yakıtı Düzenle"; 
       document.getElementById("fuelAnomalyWarning").classList.add("hidden");
       updateLpgVisibilityInApp(); 
-      document.getElementById("fuelModal").classList.remove("hidden"); 
+      openModalDirectly("fuelModal"); 
     }
 
     function saveFuel(e) { 
@@ -2764,7 +2829,6 @@
     }
 
     function viewDocument(dataUri) { 
-      const m = document.getElementById("docViewerModal"); 
       const c = document.getElementById("docViewerContent"); 
       c.innerHTML = ""; 
       if (dataUri.startsWith("data:application/pdf")) { 
@@ -2772,11 +2836,8 @@
       } else { 
         c.innerHTML = `<img src="${dataUri}" class="max-w-full max-h-[55vh] rounded-xl object-contain shadow" />`; 
       } 
-      m.classList.remove("hidden"); 
+      openModalDirectly("docViewerModal"); 
     }
-
-    function openChangelogModal() { document.getElementById("changelogModal").classList.remove("hidden"); }
-    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
 
     function switchTab(tab) { 
       ["dashboard", "fuel", "expenses", "tires", "backup"].forEach(t => { 
@@ -2801,7 +2862,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.1_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.2_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -2813,7 +2874,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5.1_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v5.2_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
@@ -2842,7 +2903,6 @@
       reader.readAsText(file); 
     }
 
-    // Başlangıç Yüklemesi
     applyTheme(currentTheme);
     applyFontSize(currentFontSizeKey);
     populateYearSelector();
