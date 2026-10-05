@@ -382,7 +382,7 @@
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1 text-[10px] font-black">
         <button onclick="filterExpenseCategory('all')" id="expChip_all" class="px-3 py-1.5 rounded-full bg-blue-600 text-white whitespace-nowrap shadow-md">Tümü</button>
         <button onclick="filterExpenseCategory('Periyodik Bakım')" id="expChip_Periyodik Bakım" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛠️ Bakım</button>
-        <button onclick="filterExpenseCategory('Sigorta')" id="expChip_Sigorta" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛡️️ Kasko / Sigorta</button>
+        <button onclick="filterExpenseCategory('Sigorta')" id="expChip_Sigorta" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛡️ Kasko / Sigorta</button>
         <button onclick="filterExpenseCategory('MTV')" id="expChip_MTV" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🏛️ MTV</button>
         <button onclick="filterExpenseCategory('Lastik')" id="expChip_Lastik" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🛞 Lastik</button>
         <button onclick="filterExpenseCategory('TÜVTÜRK Muayene')" id="expChip_TÜVTÜRK Muayene" class="px-3 py-1.5 rounded-full custom-card whitespace-nowrap custom-muted hover:text-white">🔍 Muayene</button>
@@ -1409,7 +1409,6 @@
       }
     }
 
-    // MODAL YÖNETİMİ
     function openModalDirectly(id) {
       document.getElementById(id).classList.remove("hidden");
       document.getElementById("bottomNavigationBar").style.pointerEvents = "none";
@@ -1456,7 +1455,7 @@
 
       const maxReg = getLatestVehicleKm();
       if (!editId && kmVal < maxReg) {
-        if (!confirm(`⚠️️ Girdiğiniz KM (${kmVal}), kayıtlı en yüksek KM'den (${maxReg}) düşük. Emin misiniz?`)) return;
+        if (!confirm(`⚠ Girdiğiniz KM (${kmVal}), kayıtlı en yüksek KM'den (${maxReg}) düşük. Emin misiniz?`)) return;
       }
 
       if (kmVal > 0) {
@@ -1914,7 +1913,7 @@
       else { tMtv = new Date(year + 1, 0, 31); lMtv = "Ocak Taksiti"; }
       const mtvD = Math.ceil((tMtv - now) / 86400000);
       let mtvColor = mtvD <= 15 ? "text-rose-500 font-black" : (mtvD <= 30 ? "text-amber-500 font-bold" : "text-amber-600 font-bold");
-      reminders.push({ id: 'mtv', name: '🏛️ MTV', days: mtvD, text: `${mtvD} gün kaldı`, sub: lMtv, color: mtvColor });
+      reminders.push({ id: 'mtv', name: '🏛️️ MTV', days: mtvD, text: `${mtvD} gün kaldı`, sub: lMtv, color: mtvColor });
 
       const kLogs = expenses.filter(e => e.type === "Kasko").sort((a, b) => new Date(b.date) - new Date(a.date));
       let kD = 9999, kT = "Kayıt Yok", kS = "Ekle", kC = "text-slate-400";
@@ -1929,7 +1928,7 @@
         }
         kS = kLogs[0].date.split("T")[0];
       }
-      reminders.push({ id: 'kasko', name: '🛡️ Kasko', days: kD, text: kT, sub: kS, color: kC });
+      reminders.push({ id: 'kasko', name: '🛡️️ Kasko', days: kD, text: kT, sub: kS, color: kC });
 
       const tsLogs = expenses.filter(e => e.type === "Trafik Sigortası").sort((a, b) => new Date(b.date) - new Date(a.date));
       let tsD = 9999, tsT = "Kayıt Yok", tsS = "Ekle", tsC = "text-slate-400";
@@ -2207,7 +2206,6 @@
       return { labels: l, kmData: kD, costData: cD, litData: lD, fullKeys };
     }
 
-    // GÜNLÜK KM DETAY GRAFİĞİNİ AÇMA
     function openDailyKmDetails(monthKey) {
       if (!monthKey) return;
       document.getElementById("dailyKmModalTitle").innerText = `${monthKey} Günlük KM Analizi`;
@@ -2443,7 +2441,7 @@
       openModalDirectly("expertReportModal");
     }
 
-    // AYRIŞTIRILMIŞ SAĞLIK VE SATIŞ RAPORU MOTORU
+    // AYRIŞTIRILMIŞ SAĞLIK VE SATIŞ RAPORU MOTORU (GÜNCEL SAYAÇ AKTARIMI DÜZELTİLDİ)
     function switchReportMode(mode) {
       activeReportMode = mode;
       const bH = document.getElementById("btnRepHealthMode");
@@ -2453,6 +2451,11 @@
       const liveKm = getLatestVehicleKm();
       const now = new Date();
       document.getElementById("expReportDate").innerText = `Rapor Tarihi: ${now.toLocaleDateString('tr-TR')}`;
+
+      // HER İKİ RAPOR İÇİN GÜNCEL KM VE ARAÇ BİLGİSİNİ AKTARMA
+      document.getElementById("repCarKm").innerText = liveKm > 0 ? `${liveKm.toLocaleString('tr-TR')} KM` : "0 KM";
+      document.getElementById("repCarName").innerText = carProfile.name || "Aracım";
+      document.getElementById("repCarDesc").innerText = `${carProfile.desc || 'Model'}`;
 
       if (mode === 'health') {
         bH.className = "flex-1 py-2 text-[11px] font-black rounded-lg bg-blue-600 text-white shadow";
