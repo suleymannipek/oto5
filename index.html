@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OtoTakip Pro v5.4</title>
+  <title>OtoTakip Pro v5.5</title>
   
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -146,7 +146,7 @@
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.4 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.5 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -654,11 +654,18 @@
       </div>
       <form id="fuelForm" onsubmit="saveFuel(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
         <input type="hidden" id="fId" />
+        
+        <!-- YAKIT ARALIK BİLGİ ROZETİ (ANLIK KONTROL) -->
+        <div id="fuelIntervalBadge" class="p-2.5 rounded-xl theme-sub-box border border-blue-800/40 text-[11px] font-semibold flex items-center gap-2 hidden">
+          <span class="text-base">💡</span>
+          <span id="fuelIntervalText">Önceki yakıttan bu yana hesaplanıyor...</span>
+        </div>
+
         <div class="grid grid-cols-2 gap-2.5">
           <div><label class="custom-muted text-[10px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="fDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-medium" /></div>
           <div>
             <label class="custom-muted text-[10px] font-bold">Kilometre (ODO)</label>
-            <input type="number" id="fKm" required oninput="checkOdoAnomaly(this.value, 'fuelAnomalyWarning')" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-cyan-500" />
+            <input type="number" id="fKm" required oninput="checkFuelIntervalLive(this.value); checkOdoAnomaly(this.value, 'fuelAnomalyWarning')" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-cyan-500" />
             <div id="fuelAnomalyWarning" class="p-1 rounded theme-warn-box text-[9px] font-bold mt-0.5 hidden">⚠️ Anormal KM artışı!</div>
           </div>
         </div>
@@ -1311,6 +1318,38 @@
       warnEl.classList.add("hidden");
     }
 
+    function checkFuelIntervalLive(val) {
+      const km = parseFloat(val);
+      const badge = document.getElementById("fuelIntervalBadge");
+      const textEl = document.getElementById("fuelIntervalText");
+      if (!badge || !textEl || isNaN(km) || km <= 0) {
+        if (badge) badge.classList.add("hidden");
+        return;
+      }
+      
+      const editId = document.getElementById("fId").value;
+      const sortedFuels = fuels.slice().sort((a,b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
+      let prev = null;
+      if (editId) {
+        const filtered = sortedFuels.filter(f => f.id !== editId);
+        prev = filtered.reverse().find(f => f.km < km);
+      } else {
+        prev = sortedFuels[sortedFuels.length - 1];
+      }
+
+      if (prev) {
+        const distDiff = km - prev.km;
+        const currentDate = new Date(document.getElementById("fDate").value || Date.now());
+        const prevDate = new Date(prev.date);
+        const dayDiff = Math.max(0, Math.round((currentDate - prevDate) / (1000 * 60 * 60 * 24)));
+        
+        textEl.innerHTML = `Son yakıttan bu yana <b class="text-cyan-400">+${distDiff.toLocaleString('tr-TR')} km</b> yol yapıldı <span class="custom-muted">(${dayDiff} gün önce)</span>`;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
     function applyCarProfile() {
       const liveKm = getLatestVehicleKm();
       document.getElementById("headerCarName").innerText = carProfile.name || "Aracım";
@@ -1515,12 +1554,16 @@
       
       const sortedFuelsOnly = fuels.slice().sort((a, b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
       let fuelDistMap = {};
-      for (let i = 1; i < sortedFuelsOnly.length; i++) {
-        let prev = sortedFuelsOnly[i-1];
+      let fuelDaysMap = {};
+      for (let i = 0; i < sortedFuelsOnly.length; i++) {
         let curr = sortedFuelsOnly[i];
-        let d = curr.km - prev.km;
-        if (d > 0) {
-          fuelDistMap[curr.id] = { dist: d, costPerKm: (curr.total / d).toFixed(2) };
+        if (i > 0) {
+          let prev = sortedFuelsOnly[i-1];
+          let d = curr.km - prev.km;
+          let days = Math.max(0, Math.round((new Date(curr.date) - new Date(prev.date)) / (1000 * 60 * 60 * 24)));
+          if (d > 0) {
+            fuelDistMap[curr.id] = { dist: d, days: days, costPerKm: (curr.total / d).toFixed(2) };
+          }
         }
       }
 
@@ -1578,8 +1621,8 @@
               <div class="pt-2.5 mt-2.5 border-t border-slate-700/40 space-y-2.5">
                 <div class="grid grid-cols-2 gap-2 text-[10px] p-2.5 theme-sub-box rounded-xl">
                   <div>
-                    <span class="custom-muted block text-[9px] font-bold">Ara Mesafe</span>
-                    <span class="font-black">${meta ? meta.dist.toLocaleString('tr-TR') + ' km' : 'İlk dolum'}</span>
+                    <span class="custom-muted block text-[9px] font-bold">Önceki Yakıttan Yol</span>
+                    <span class="font-black text-blue-400">${meta ? '+' + meta.dist.toLocaleString('tr-TR') + ' km (' + meta.days + ' gün)' : 'İlk dolum'}</span>
                   </div>
                   <div>
                     <span class="custom-muted block text-[9px] font-bold">Birim Maliyet</span>
@@ -2331,7 +2374,7 @@
       document.getElementById("btnReturnToMonthlyKm").classList.remove("hidden");
       document.getElementById("landscapeChartIcon").innerText = "📅";
       document.getElementById("landscapeChartTitle").innerText = `${monthKey} - Günlük Katedilen Mesafe`;
-      document.getElementById("landscapeChartSubText").innerText = "Günlük toplam yapılan yol dökümü";
+      document.getElementById("landscapeChartSubText").innerText = "Aynı gün yapılan toplam yol dökümü";
 
       let allEntries = [];
       fuels.filter(f => f.date && f.date.startsWith(monthKey)).forEach(f => {
@@ -2343,7 +2386,6 @@
 
       allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      // Önceki aydan sarkan son sayaç bazını bul
       let prevBaseKm = null;
       const allSortedCombined = [...odoLogs, ...fuels].sort((a,b) => new Date(a.date) - new Date(b.date));
       const lastBefore = allSortedCombined.filter(item => item.date < `${monthKey}-01`).pop();
@@ -2359,10 +2401,9 @@
         lastCounter = item.km;
       });
 
-      // GÜN BAZINDA GRUPLAMA (Aynı gün yapılan yolları toplama)
       let dailyMap = {};
       allEntries.forEach(item => {
-        let dayStr = item.date.split("T")[0]; // YYYY-MM-DD
+        let dayStr = item.date.split("T")[0];
         if (!dailyMap[dayStr]) {
           dailyMap[dayStr] = { totalDiff: 0, entries: [] };
         }
@@ -2375,8 +2416,7 @@
       let dailyDistances = [];
 
       sortedDays.forEach(dayStr => {
-        let dayNum = dayStr.substring(8) + ". Gün";
-        dailyLabels.push(dayNum);
+        dailyLabels.push(dayStr.substring(8) + ". Gün");
         dailyDistances.push(dailyMap[dayStr].totalDiff);
       });
 
@@ -2438,6 +2478,7 @@
         `;
       }
     }
+
     function openLandscapeChart(type) {
       currentLandscapeMode = type;
       const titleEl = document.getElementById("landscapeChartTitle"); 
@@ -2821,6 +2862,7 @@
       if (lk > 0) document.getElementById("fKm").value = lk; 
       document.getElementById("fuelModalTitle").innerText = "⛽ Yeni Yakıt Alımı"; 
       document.getElementById("fuelAnomalyWarning").classList.add("hidden");
+      document.getElementById("fuelIntervalBadge").classList.add("hidden");
       populatePaymentSelects();
       updateLpgVisibilityInApp(); 
       openModalDirectly("fuelModal"); 
@@ -2850,6 +2892,7 @@
       }
       document.getElementById("fuelModalTitle").innerText = "Yakıtı Düzenle"; 
       document.getElementById("fuelAnomalyWarning").classList.add("hidden");
+      checkFuelIntervalLive(f.km);
       updateLpgVisibilityInApp(); 
       openModalDirectly("fuelModal"); 
     }
@@ -2971,7 +3014,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.4_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.5_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -2983,7 +3026,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5.4_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v5.5_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
