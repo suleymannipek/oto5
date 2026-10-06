@@ -2331,7 +2331,7 @@
       document.getElementById("btnReturnToMonthlyKm").classList.remove("hidden");
       document.getElementById("landscapeChartIcon").innerText = "📅";
       document.getElementById("landscapeChartTitle").innerText = `${monthKey} - Günlük Katedilen Mesafe`;
-      document.getElementById("landscapeChartSubText").innerText = "Kayıtlar arası net kilometre farkları";
+      document.getElementById("landscapeChartSubText").innerText = "Günlük toplam yapılan yol dökümü";
 
       let allEntries = [];
       fuels.filter(f => f.date && f.date.startsWith(monthKey)).forEach(f => {
@@ -2343,30 +2343,41 @@
 
       allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      const [yearStr, monthStr] = monthKey.split('-');
-      let prevMDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
-      prevMDate.setDate(prevMDate.getDate() - 1);
-      const prevMKey = prevMDate.toISOString().substring(0, 7);
-
+      // Önceki aydan sarkan son sayaç bazını bul
       let prevBaseKm = null;
       const allSortedCombined = [...odoLogs, ...fuels].sort((a,b) => new Date(a.date) - new Date(b.date));
       const lastBefore = allSortedCombined.filter(item => item.date < `${monthKey}-01`).pop();
       if (lastBefore) prevBaseKm = lastBefore.km;
 
-      let dailyLabels = [];
-      let dailyDistances = [];
       let lastCounter = prevBaseKm;
-
       allEntries.forEach(item => {
         let diff = 0;
-        if (lastCounter !== null) {
-          diff = Math.max(0, item.km - lastCounter);
+        if (lastCounter !== null && item.km >= lastCounter) {
+          diff = item.km - lastCounter;
         }
         item.diffKm = diff;
         lastCounter = item.km;
+      });
 
-        dailyLabels.push(item.date.split("T")[0].substring(8) + ". Gün");
-        dailyDistances.push(diff);
+      // GÜN BAZINDA GRUPLAMA (Aynı gün yapılan yolları toplama)
+      let dailyMap = {};
+      allEntries.forEach(item => {
+        let dayStr = item.date.split("T")[0]; // YYYY-MM-DD
+        if (!dailyMap[dayStr]) {
+          dailyMap[dayStr] = { totalDiff: 0, entries: [] };
+        }
+        dailyMap[dayStr].totalDiff += item.diffKm;
+        dailyMap[dayStr].entries.push(item);
+      });
+
+      let sortedDays = Object.keys(dailyMap).sort();
+      let dailyLabels = [];
+      let dailyDistances = [];
+
+      sortedDays.forEach(dayStr => {
+        let dayNum = dayStr.substring(8) + ". Gün";
+        dailyLabels.push(dayNum);
+        dailyDistances.push(dailyMap[dayStr].totalDiff);
       });
 
       const ctx = document.getElementById("landscapeCanvas").getContext("2d");
@@ -2409,23 +2420,24 @@
         infoBox.innerHTML = `
           <div class="text-[11px] font-black text-cyan-500 mb-1">📋 ${monthKey} Ayı Günlük Yol Dökümü:</div>
           <div class="space-y-1">
-            ${allEntries.map(item => `
-              <div class="p-2 theme-sub-box rounded-lg flex justify-between items-center text-[10px]">
-                <div>
-                  <span class="font-bold text-slate-200">${formatDateTimeLabel(item.date)}</span>
-                  <span class="custom-muted ml-1.5">${item.label}</span>
+            ${sortedDays.map(dayStr => {
+              let info = dailyMap[dayStr];
+              return `
+                <div class="p-2 theme-sub-box rounded-lg flex justify-between items-center text-[10px]">
+                  <div>
+                    <span class="font-bold text-slate-200">${dayStr}</span>
+                    <span class="custom-muted ml-1.5">${info.entries.map(e => e.label).join(' • ')}</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="font-black text-emerald-500">+${info.totalDiff.toLocaleString('tr-TR')} KM</span>
+                  </div>
                 </div>
-                <div class="text-right">
-                  <span class="font-black text-emerald-500">+${item.diffKm ? item.diffKm.toLocaleString('tr-TR') : 0} KM</span>
-                  <span class="custom-muted block text-[9px] font-semibold">Sayaç: ${item.km.toLocaleString('tr-TR')} KM</span>
-                </div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         `;
       }
     }
-
     function openLandscapeChart(type) {
       currentLandscapeMode = type;
       const titleEl = document.getElementById("landscapeChartTitle"); 
