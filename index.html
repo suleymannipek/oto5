@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OtoTakip Pro v5.7</title>
+  <title>OtoTakip Pro v5.8</title>
   
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -146,7 +146,7 @@
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.7 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.8 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -881,7 +881,7 @@
         <div class="p-3 rounded-xl theme-sub-box flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <input type="checkbox" id="eIncludeInExpert" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-0 cursor-pointer" />
-            <label for="eIncludeInExpert" class="text-[11px] font-black text-emerald-500 cursor-pointer">🛡️ Garanti / Ekspertiz Raporuna Dahil Et</label>
+            <label for="eIncludeInExpert" class="text-[11px] font-black text-emerald-500 cursor-pointer">🛡️️ Garanti / Ekspertiz Raporuna Dahil Et</label>
           </div>
           <span class="text-[9px] custom-muted font-bold">Onaylı</span>
         </div>
@@ -1427,7 +1427,7 @@
       const nextEvent = allEvents.find(e => e.date > targetDateStr);
 
       if (prevEvent && targetKm < prevEvent.km) {
-        return { isValid: false, msg: `⚠️️ Girilen KM, ${prevEvent.date.split('T')[0]} tarihindeki sayaçtan (${prevEvent.km.toLocaleString('tr-TR')} KM) daha düşük olamaz!` };
+        return { isValid: false, msg: `⚠️ Girilen KM, ${prevEvent.date.split('T')[0]} tarihindeki sayaçtan (${prevEvent.km.toLocaleString('tr-TR')} KM) daha düşük olamaz!` };
       }
       if (nextEvent && targetKm > nextEvent.km) {
         return { isValid: false, msg: `⚠️ Girilen KM, ${nextEvent.date.split('T')[0]} tarihindeki sonraki sayaçtan (${nextEvent.km.toLocaleString('tr-TR')} KM) daha yüksek olamaz!` };
@@ -2179,7 +2179,7 @@
         });
       }
 
-      const bText = eligible[0].days <= 0 ? `⚠️ ${eligible[0].name.split(" ")[1]} ACİL!` : `${eligible[0].name.split(" ")[1]}: ${eligible[0].text}`;
+      const bText = eligible[0].days <= 0 ? `⚠️️ ${eligible[0].name.split(" ")[1]} ACİL!` : `${eligible[0].name.split(" ")[1]}: ${eligible[0].text}`;
       badgeEl.innerText = bText;
       badgeEl.className = eligible[0].days <= 15 
         ? "text-[10px] bg-rose-950/30 text-rose-500 border border-rose-800/40 px-2 py-0.5 rounded-lg font-black truncate animate-pulse" 
@@ -2476,14 +2476,47 @@
       const sf = calcFuels.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
       const ctxPrice = document.getElementById("priceTrendCanvas").getContext("2d");
       let gradPrice = ctxPrice.createLinearGradient(0, 0, 0, 120);
-      gradPrice.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
-      gradPrice.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+      gradPrice.addColorStop(0, 'rgba(56, 189, 248, 0.25)');
+      gradPrice.addColorStop(1, 'rgba(56, 189, 248, 0.00)');
+
+      const shortInlineLabels = sf.map(f => {
+        if (!f.date) return "-";
+        const d = new Date(f.date);
+        return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+      });
 
       if (priceChart) priceChart.destroy();
       priceChart = new Chart(ctxPrice, { 
         type: 'line', 
-        data: { labels: sf.length ? sf.map(f => formatDateTimeLabel(f.date)) : ["-"], datasets: [{ data: sf.length ? sf.map(f => (f.total / f.liters).toFixed(2)) : [0], borderColor: '#0284c7', backgroundColor: gradPrice, fill: true, tension: 0.4, pointBackgroundColor: '#0284c7', pointRadius: 4 }] }, 
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 9 } } } } } 
+        data: { 
+          labels: shortInlineLabels.length ? shortInlineLabels : ["-"], 
+          datasets: [{ 
+            data: sf.length ? sf.map(f => (f.total / f.liters).toFixed(2)) : [0], 
+            borderColor: '#38bdf8', 
+            backgroundColor: gradPrice, 
+            fill: true, 
+            tension: 0.3, 
+            pointBackgroundColor: '#38bdf8', 
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 1.5,
+            pointRadius: 3 
+          }] 
+        }, 
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: { legend: { display: false } }, 
+          scales: { 
+            x: { 
+              grid: { color: 'rgba(255, 255, 255, 0.06)' }, 
+              ticks: { color: tC, font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 7 } 
+            }, 
+            y: { 
+              grid: { color: 'rgba(255, 255, 255, 0.06)' }, 
+              ticks: { color: tC, font: { size: 9 } } 
+            } 
+          } 
+        } 
       });
     }
 
@@ -2703,12 +2736,12 @@
         
         const sF = cF.slice().sort((a, b) => new Date(a.date) - new Date(b.date)); 
 
-        // Ferah, saydam gradyan (boğulmayı önler)
-        let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 300);
-        gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.20)');
+        // Aydınlık ve ferah gradyan
+        let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 320);
+        gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
         gradPriceModal.addColorStop(1, 'rgba(56, 189, 248, 0.00)');
 
-        // Sadeleştirilmiş X ekseni etiketleri (Örn: "14 Ağu" veya "14.08")
+        // Sadeleştirilmiş X ekseni etiketleri (GG.AA)
         const shortLabels = sF.map(f => {
           if (!f.date) return "-";
           const d = new Date(f.date);
@@ -2738,7 +2771,7 @@
             responsive: true, 
             maintainAspectRatio: false, 
             layout: {
-              padding: { bottom: 5 } // Alt boşluğu minimuma indirir
+              padding: { bottom: 5 }
             },
             plugins: { 
               legend: { 
@@ -2763,7 +2796,7 @@
                 ticks: { 
                   color: '#cbd5e1', 
                   font: { size: 10, weight: 'bold' },
-                  maxRotation: 0, // Yazıların dik/eğik olup aşağı uzamasını engeller
+                  maxRotation: 0,
                   autoSkip: true,
                   maxTicksLimit: 8
                 } 
@@ -2774,7 +2807,20 @@
               } 
             } 
           } 
-        });
+        }); 
+
+        infoBox.innerHTML = `
+          <div class="text-[11px] font-black text-cyan-500 mb-1">📊 Son Yakıt Alımları Birim Fiyatı:</div>
+          <div class="space-y-1">
+            ${sF.slice(-6).reverse().map(f => `
+              <div class="p-2 theme-sub-box rounded-lg flex justify-between items-center text-[10px]">
+                <span>${formatDateTimeLabel(f.date)} • ${f.station}</span>
+                <b class="text-cyan-400 font-bold">${(f.total / f.liters).toFixed(2)} ₺/L</b>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
       openModalDirectly("landscapeChartModal");
     }
 
@@ -2955,7 +3001,7 @@
           </div>
 
           <div class="p-3.5 rounded-xl theme-sub-box space-y-2">
-            <h4 class="text-[11px] font-black text-blue-500 flex items-center gap-1.5"><span>🏛️️</span> Yasal Zorunluluklar & Poliçeler</h4>
+            <h4 class="text-[11px] font-black text-blue-500 flex items-center gap-1.5"><span>🏛️</span> Yasal Zorunluluklar & Poliçeler</h4>
             <div class="grid grid-cols-2 gap-2 text-[10px]">
               <div class="p-2 rounded-lg theme-sub-box">
                 <span class="custom-muted block text-[9px] font-bold">Kasko Durumu</span>
@@ -3342,7 +3388,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.7_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.8_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -3354,7 +3400,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5.7_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v5.8_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
