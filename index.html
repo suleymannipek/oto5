@@ -2700,30 +2700,81 @@
         iconEl.innerText = "📊"; 
         titleEl.innerText = "Pompa Litre Fiyatı"; 
         document.getElementById("landscapeChartSubText").innerText = "Tarih bazlı birim fiyat değişimi";
-        let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 300);
-        gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.5)');
-        gradPriceModal.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+        
         const sF = cF.slice().sort((a, b) => new Date(a.date) - new Date(b.date)); 
+
+        // Ferah, saydam gradyan (boğulmayı önler)
+        let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 300);
+        gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.20)');
+        gradPriceModal.addColorStop(1, 'rgba(56, 189, 248, 0.00)');
+
+        // Sadeleştirilmiş X ekseni etiketleri (Örn: "14 Ağu" veya "14.08")
+        const shortLabels = sF.map(f => {
+          if (!f.date) return "-";
+          const d = new Date(f.date);
+          return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+        });
 
         if (landscapeChartInstance) landscapeChartInstance.destroy();
         landscapeChartInstance = new Chart(ctx, { 
           type: 'line', 
-          data: { labels: sF.length ? sF.map(f => `${formatDateTimeLabel(f.date)} (${f.station})`) : ["-"], datasets: [{ label: 'Fiyat (₺/L)', data: sF.length ? sF.map(f => (f.total / f.liters).toFixed(2)) : [0], borderColor: '#0284c7', backgroundColor: gradPriceModal, fill: true, tension: 0.35, pointBackgroundColor: '#0284c7', pointRadius: 5 }] }, 
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 10 } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
-        }); 
-
-        infoBox.innerHTML = `
-          <div class="text-[11px] font-black text-cyan-500 mb-1">📊 Son Yakıt Alımları Birim Fiyatı:</div>
-          <div class="space-y-1">
-            ${sF.slice(-5).reverse().map(f => `
-              <div class="p-2 theme-sub-box rounded-lg flex justify-between items-center text-[10px]">
-                <span>${formatDateTimeLabel(f.date)} • ${f.station}</span>
-                <b class="text-cyan-500">${(f.total / f.liters).toFixed(2)} ₺/L</b>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
+          data: { 
+            labels: shortLabels.length ? shortLabels : ["-"], 
+            datasets: [{ 
+              label: 'Fiyat (₺/L)', 
+              data: sF.length ? sF.map(f => (f.total / f.liters).toFixed(2)) : [0], 
+              borderColor: '#38bdf8', 
+              backgroundColor: gradPriceModal, 
+              fill: true, 
+              tension: 0.3, 
+              pointBackgroundColor: '#38bdf8', 
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 1.5,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }] 
+          }, 
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            layout: {
+              padding: { bottom: 5 } // Alt boşluğu minimuma indirir
+            },
+            plugins: { 
+              legend: { 
+                labels: { color: '#f8fafc', font: { weight: 'bold', size: 11 } } 
+              },
+              tooltip: {
+                callbacks: {
+                  title: function(context) {
+                    const item = sF[context[0].dataIndex];
+                    return item ? `${formatDateTimeLabel(item.date)}` : '';
+                  },
+                  label: function(context) {
+                    const item = sF[context.dataIndex];
+                    return item ? ` ${item.station}: ${(item.total / item.liters).toFixed(2)} ₺/L` : '';
+                  }
+                }
+              }
+            }, 
+            scales: { 
+              x: { 
+                grid: { color: 'rgba(255, 255, 255, 0.06)' }, 
+                ticks: { 
+                  color: '#cbd5e1', 
+                  font: { size: 10, weight: 'bold' },
+                  maxRotation: 0, // Yazıların dik/eğik olup aşağı uzamasını engeller
+                  autoSkip: true,
+                  maxTicksLimit: 8
+                } 
+              }, 
+              y: { 
+                grid: { color: 'rgba(255, 255, 255, 0.06)' }, 
+                ticks: { color: '#f8fafc', font: { size: 11, weight: 'bold' } } 
+              } 
+            } 
+          } 
+        });
       openModalDirectly("landscapeChartModal");
     }
 
