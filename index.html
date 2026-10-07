@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>OtoTakip Pro v6.0</title>
+  
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
   <link rel="manifest" href="./manifest.json" />
   <script>
     if ('serviceWorker' in navigator) {
@@ -16,14 +18,165 @@
       });
     }
   </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+    }
+    html[data-theme="midnight"] {
+      --bg-main: #0b1329;
+      --bg-header: rgba(11, 19, 41, 0.95);
+      --card-bg: #111c38;
+      --card-border: #1e2c4f;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --sub-box-bg: rgba(30, 41, 59, 0.45);
+      --sub-box-border: #1e293b;
+      --input-bg: #0b1329;
+      --nav-bg: rgba(11, 19, 41, 0.98);
+      --chart-grid: #1e2c4f;
+      --reminder-box: rgba(30, 41, 59, 0.5);
+      --reminder-border: #334155;
+      --warn-text: #fbbf24;
+      --warn-bg: rgba(245, 158, 11, 0.15);
+      --warn-border: rgba(245, 158, 11, 0.35);
+    }
+    html[data-theme="light"] {
+      --bg-main: #f1f5f9;
+      --bg-header: rgba(255, 255, 255, 0.98);
+      --card-bg: #ffffff;
+      --card-border: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #334155;
+      --sub-box-bg: #f8fafc;
+      --sub-box-border: #e2e8f0;
+      --input-bg: #f8fafc;
+      --nav-bg: rgba(255, 255, 255, 0.98);
+      --chart-grid: #cbd5e1;
+      --reminder-box: #e2e8f0;
+      --reminder-border: #cbd5e1;
+      --warn-text: #b45309;
+      --warn-bg: #fef3c7;
+      --warn-border: #fde68a;
+    }
+    html[data-theme="oled"] {
+      --bg-main: #000000;
+      --bg-header: rgba(0, 0, 0, 0.95);
+      --card-bg: #0a0a0a;
+      --card-border: #222222;
+      --text-main: #ffffff;
+      --text-muted: #737373;
+      --sub-box-bg: #141414;
+      --sub-box-border: #262626;
+      --input-bg: #000000;
+      --nav-bg: rgba(0, 0, 0, 0.98);
+      --chart-grid: #1c1c1c;
+      --reminder-box: #141414;
+      --reminder-border: #262626;
+      --warn-text: #fbbf24;
+      --warn-bg: rgba(245, 158, 11, 0.15);
+      --warn-border: rgba(245, 158, 11, 0.35);
+    }
+    html { 
+      background-color: var(--bg-main); 
+      transition: background-color 0.25s ease, font-size 0.2s ease;
+      font-size: 14px;
+    }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      padding-top: var(--sat);
+      padding-bottom: calc(5.5rem + var(--sab));
+      overflow-x: hidden;
+    }
+    header {
+      background-color: var(--bg-header) !important;
+      border-color: var(--card-border) !important;
+      padding-top: calc(0.5rem + var(--sat)) !important;
+    }
+    .custom-card { 
+      background-color: var(--card-bg); 
+      border: 1px solid var(--card-border); 
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15);
+      border-radius: 1rem;
+    }
+    .theme-sub-box {
+      background-color: var(--sub-box-bg);
+      border: 1px solid var(--sub-box-border);
+    }
+    .theme-warn-box {
+      background-color: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      color: var(--warn-text);
+    }
+    .custom-input { 
+      background-color: var(--input-bg) !important; 
+      border-color: var(--card-border) !important; 
+      color: var(--text-main) !important; 
+    }
+    .custom-muted { color: var(--text-muted) !important; }
+    .reminder-pill { background-color: var(--reminder-box); border: 1px solid var(--reminder-border); }
+    nav { 
+      background-color: var(--nav-bg) !important; 
+      border-color: var(--card-border) !important; 
+      z-index: 40 !important;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+    .modal-backdrop { z-index: 50 !important; }
+    .history-scroll::-webkit-scrollbar { width: 4px; }
+    .history-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
 <body class="min-h-screen">
-<!-- OtoTakip v6.0 Expert & PWA System -->
-<script>
-  console.log('OtoTakip v6.0 Hazır!');
-  location.href = 'https://suleymannipek.github.io/oto5/';
-</script>
+
+  <header class="sticky top-0 z-30 backdrop-blur-xl border-b px-3.5 py-2.5 flex justify-between items-center shadow-lg">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-base shadow-md flex-shrink-0">🚗</div>
+      <div class="min-w-0 truncate">
+        <div class="flex items-center gap-1.5">
+          <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v6.0 PRO</span>
+        </div>
+        <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-2.5 flex-shrink-0 ml-2">
+      <select id="globalYearSelect" onchange="changeActiveYear(this.value)" class="text-[11px] font-extrabold py-1 px-2 rounded-xl custom-card border outline-none text-cyan-500 shadow-inner"></select>
+      <button onclick="cycleTheme()" id="btnThemeToggle" title="Tema Değiştir" class="h-8 w-8 rounded-xl custom-card flex items-center justify-center text-xs shadow-sm"><span id="themeIcon">🔵</span></button>
+      <button onclick="toggleFullScreen()" title="Tam Ekran" class="w-8 h-8 rounded-xl custom-card flex items-center justify-center text-[11px]">⛶</button>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto p-3 space-y-3.5 pb-20">
+    <div id="tabDashboard" class="space-y-3.5">
+      <div class="custom-card p-4 text-center space-y-2">
+        <h2 class="text-sm font-black text-cyan-400">OtoTakip Pro v6.0 Aktif!</h2>
+        <p class="text-xs custom-muted">Sistem başarıyla kuruldu. Verileriniz yükleniyor...</p>
+      </div>
+    </div>
+  </main>
+
+  <nav id="bottomNavigationBar" class="backdrop-blur-2xl border-t pb-1.5 shadow-2xl">
+    <div class="flex justify-around items-center max-w-md mx-auto pt-1.5">
+      <button type="button" onclick="switchTab('dashboard')" id="navDashboard" class="flex flex-col items-center py-1.5 px-3 rounded-2xl bg-blue-600/20 text-cyan-500 font-black"><span class="text-xl">📊</span><span class="text-[9px] mt-0.5">Özet</span></button>
+    </div>
+  </nav>
+
+  <script>
+    console.log("OtoTakip Pro v6.0 Çalışıyor.");
+  </script>
 </body>
 </html>
