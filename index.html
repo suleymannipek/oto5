@@ -10,6 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
+  <!-- PWA MANIFEST & SERVICE WORKER BAĞLANTISI -->
   <link rel="manifest" href="./manifest.json" />
   <script>
     if ('serviceWorker' in navigator) {
@@ -161,22 +162,407 @@
   </header>
 
   <main class="max-w-md mx-auto p-3 space-y-3.5 pb-20">
+
+    <!-- 1. SEKME: ÖZET -->
     <div id="tabDashboard" class="space-y-3.5">
-      <div class="custom-card p-4 text-center space-y-2">
-        <h2 class="text-sm font-black text-cyan-400">OtoTakip Pro v6.0 Aktif!</h2>
-        <p class="text-xs custom-muted">Sistem başarıyla kuruldu. Verileriniz yükleniyor...</p>
+      <div id="collapsibleReminderStrip" class="custom-card p-3 shadow-md cursor-pointer border-cyan-800/40" onclick="toggleSubReminderPanel()">
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex items-center gap-2 truncate">
+            <span class="text-cyan-500 text-sm animate-pulse">🔔</span>
+            <span class="font-bold text-[11px]">Hatırlatıcılar</span>
+            <span id="stripQuickBadge" class="text-[10px] bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 px-2 py-0.5 rounded-lg font-semibold truncate">✅ Önümüzdeki 45 gün içinde yaklaşan hatırlatıcı yok</span>
+          </div>
+          <span id="stripToggleIcon" class="text-xs custom-muted font-bold ml-2">▼</span>
+        </div>
+        <div id="subReminderDetails" class="grid grid-cols-2 gap-2 text-[11px] pt-2.5 mt-2 border-t border-slate-700/40 hidden"></div>
+      </div>
+
+      <div class="flex justify-between items-center px-1">
+        <span class="text-[11px] font-bold custom-muted tracking-wide flex items-center gap-1"><span>📅</span> <span id="dashPeriodTitle">Dönem: 2026</span></span>
+        <span id="dashTotalEntries" class="text-[10px] font-extrabold text-cyan-500 bg-cyan-950/20 px-2 py-0.5 rounded-full border border-cyan-800/30">0 Kayıt</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="custom-card p-3.5 shadow relative overflow-hidden">
+          <span class="text-[9px] font-extrabold custom-muted uppercase tracking-wider">SON TÜKETİM</span>
+          <div class="mt-1.5"><span id="statLatestCons" class="text-2xl font-black text-cyan-500 tracking-tight">--</span><span class="text-[10px] font-bold custom-muted ml-0.5">L/100km</span></div>
+          <p id="statAvgCons" class="text-[10px] custom-muted mt-1 font-semibold">Dönem Ort: -- L</p>
+        </div>
+        <div class="custom-card p-3.5 shadow relative overflow-hidden">
+          <span class="text-[9px] font-extrabold custom-muted uppercase tracking-wider">BİRİM MALİYET</span>
+          <div class="mt-1.5"><span id="statCostPerKm" class="text-2xl font-black text-emerald-500 tracking-tight">--</span><span class="text-[10px] font-bold custom-muted ml-0.5">₺/km</span></div>
+          <p id="statTotalDistance" class="text-[10px] custom-muted mt-1 font-semibold">Mesafe: 0 km</p>
+        </div>
+        <div onclick="openCustomFuelFilterModal()" class="custom-card p-3.5 shadow relative overflow-hidden cursor-pointer hover:border-amber-500/50">
+          <div class="flex justify-between items-start"><span class="text-[9px] font-extrabold custom-muted uppercase tracking-wider">YAKIT GİDERİ</span><span class="text-[8px] bg-amber-900/30 text-amber-400 font-black px-1.5 py-0.5 rounded">Filtrele 🔍</span></div>
+          <div class="mt-1.5"><span id="statFuelExpense" class="text-2xl font-black text-amber-500 tracking-tight">₺0</span></div>
+          <p id="statFuelVolume" class="text-[10px] custom-muted mt-1 font-semibold">Hacim: 0.0 L</p>
+        </div>
+        <div class="custom-card p-3.5 shadow relative overflow-hidden">
+          <span class="text-[9px] font-extrabold custom-muted uppercase tracking-wider">TOPLAM GİDERLER</span>
+          <div class="mt-1.5"><span id="statTotalOwnership" class="text-2xl font-black text-pink-500 tracking-tight">₺0</span></div>
+          <p class="text-[10px] custom-muted mt-1 font-semibold">Yakıt + Servis + Sabit</p>
+        </div>
+      </div>
+
+      <div class="custom-card p-3.5 shadow text-xs">
+        <span class="text-[9px] font-black uppercase tracking-wider text-cyan-500">📊 KULLANIM YOĞUNLUĞU</span>
+        <div id="statKmEstimateBox" class="text-sm font-black mt-1 tracking-tight">Ayda ortalama: -- km • Yılda tahmini: -- km</div>
+      </div>
+
+      <div class="custom-card overflow-hidden shadow">
+        <button onclick="toggleChartsAccordion()" class="w-full p-3.5 flex justify-between items-center text-left">
+          <div class="flex items-center gap-2.5"><span class="text-lg text-cyan-500">📈</span><div><h4 class="text-xs font-black">Aylık Yol & Harcama Grafikleri</h4><p class="text-[10px] custom-muted">Grafiklere tıklayarak inceleyin</p></div></div>
+          <span id="chartAccordionIcon" class="text-[10px] custom-muted font-bold px-2.5 py-1 rounded-lg custom-card border">▼ Göster</span>
+        </button>
+        <div id="chartsAccordionBody" class="hidden p-3.5 pt-0 space-y-3.5 border-t border-slate-700/40">
+          <div onclick="openLandscapeChart('km')" class="custom-card p-3.5 shadow mt-3.5 cursor-pointer">
+            <h4 class="text-xs font-black text-blue-500">📈 Aylık Yol Analizi (Büyüt ⛶)</h4>
+            <div class="h-36 w-full pointer-events-none mt-2"><canvas id="monthlyKmCanvas"></canvas></div>
+          </div>
+          <div onclick="openLandscapeChart('fuel')" class="custom-card p-3.5 shadow cursor-pointer">
+            <h4 class="text-xs font-black text-amber-500">⛽ Aylık Yakıt Trendi (Büyüt ⛶)</h4>
+            <div class="h-36 w-full pointer-events-none mt-2"><canvas id="monthlyFuelCanvas"></canvas></div>
+          </div>
+          <div onclick="openLandscapeChart('price')" class="custom-card p-3.5 shadow cursor-pointer">
+            <h4 class="text-xs font-black text-cyan-500">📊 Pompa Litre Fiyat Trendi (Büyüt ⛶)</h4>
+            <div class="h-32 w-full pointer-events-none mt-2"><canvas id="priceTrendCanvas"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SEKME: YAKIT -->
+    <div id="tabFuel" class="space-y-3 hidden">
+      <div id="fuelRangeBanner" class="custom-card p-3.5 shadow border-blue-900/40 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex items-center gap-2.5"><span class="text-xl text-cyan-500">🎯</span><div><span class="text-[9px] uppercase font-black text-cyan-500">Tahmini Depo Menzili</span><div id="fuelRangeText" class="font-black text-xs mt-0.5">Hesaplanıyor...</div></div></div>
+          <span id="fuelRangeRemaining" class="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-blue-950/30 text-blue-400">--</span>
+        </div>
+        <div class="pt-2 border-t border-slate-700/40 flex justify-between items-center text-[10px]">
+          <div><span class="custom-muted font-bold">Depodaki Yakıt:</span><span id="fuelBarsDisplay" class="font-black text-emerald-400 ml-1">--</span></div>
+          <div id="lastFuelDiffInfo" class="font-bold text-cyan-400 truncate">Son Yakıttan Beri: --</div>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center mb-1">
+        <div><h3 class="text-xs font-black">Yakıt & Kilometre Kayıtları</h3><p id="fuelPeriodIndicator" class="text-[10px] text-cyan-500 font-semibold"></p></div>
+        <div class="flex items-center gap-2">
+          <button onclick="openOdoModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black px-2.5 py-1.5 rounded-xl shadow">📍 Sadece KM</button>
+          <button onclick="openFuelModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow">+ Yakıt Ekle</button>
+        </div>
+      </div>
+
+      <div class="relative">
+        <input type="text" id="fuelSearchInput" oninput="renderFuelCards(getFilteredCombinedLogs())" placeholder="İstasyon, şube, kart veya tarih ara..." class="w-full text-xs p-2.5 rounded-xl custom-input border outline-none pl-8" />
+        <span class="absolute left-2.5 top-3 text-xs custom-muted">🔍</span>
+      </div>
+
+      <div class="flex gap-2 text-[10px] font-black">
+        <button onclick="setFuelViewFilter('all')" id="fuelViewFilter_all" class="flex-1 py-1.5 rounded-xl bg-blue-600 text-white shadow">Tümü</button>
+        <button onclick="setFuelViewFilter('fuel')" id="fuelViewFilter_fuel" class="flex-1 py-1.5 rounded-xl custom-card border custom-muted">⛽ Yakıtlar</button>
+        <button onclick="setFuelViewFilter('odo')" id="fuelViewFilter_odo" class="flex-1 py-1.5 rounded-xl custom-card border custom-muted">📍 KM Girişleri</button>
+      </div>
+
+      <div id="fuelCardsList" class="space-y-2.5"></div>
+    </div>
+
+    <!-- 3. SEKME: GİDERLER -->
+    <div id="tabExpenses" class="space-y-3 hidden">
+      <div class="flex justify-between items-center mb-1">
+        <div><h3 class="text-xs font-black">Bakım, Sigorta & Harcamalar</h3></div>
+        <button onclick="openExpenseModal()" class="bg-emerald-600 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow">+ Gider Ekle</button>
+      </div>
+      <div class="relative">
+        <input type="text" id="expenseSearchInput" oninput="renderExpenseCards()" placeholder="Kategori, açıklama veya kart ara..." class="w-full text-xs p-2.5 rounded-xl custom-input border outline-none pl-8" />
+        <span class="absolute left-2.5 top-3 text-xs custom-muted">🔍</span>
+      </div>
+      <div id="expenseCardsList" class="space-y-2.5"></div>
+    </div>
+
+    <!-- 4. SEKME: BAKIM & LASTİK -->
+    <div id="tabTires" class="space-y-3.5 hidden">
+      <div class="custom-card p-3.5 shadow">
+        <h4 class="text-xs font-black text-cyan-500">🛞 Lastik & Parça Durumu</h4>
+        <p class="text-[10px] custom-muted mt-1">Bakım ve lastik setlerinizi buradan takip edebilirsiniz.</p>
+      </div>
+    </div>
+
+    <!-- 5. SEKME: YEDEK & AYARLAR -->
+    <div id="tabBackup" class="space-y-3.5 hidden">
+      <div class="custom-card p-4 shadow space-y-3">
+        <h3 class="text-xs font-black">Veri Yedekleme & Ayarlar</h3>
+        <button onclick="exportJSON()" class="w-full p-3 bg-blue-600 text-white rounded-xl text-xs font-black shadow">💾 JSON Yedek İndir</button>
       </div>
     </div>
   </main>
 
-  <nav id="bottomNavigationBar" class="backdrop-blur-2xl border-t pb-1.5 shadow-2xl">
+  <!-- SAYAÇ / ODO MODALI (YOL BİLGİSAYARI ORTALAMASI İLE OTOMATİK YAKIT HESABI) -->
+  <div id="odoModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[88vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 border-b border-slate-700/40 pb-2">
+        <h3 class="font-black text-xs text-cyan-400">📍 Kilometre & Yol Bilgisayarı Tüketimi</h3>
+        <button onclick="closeModal('odoModal')" class="custom-muted text-lg font-black">✕</button>
+      </div>
+      <form onsubmit="saveManualOdo(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
+        <input type="hidden" id="mOdoId" />
+        <div>
+          <label class="custom-muted text-[10px] font-bold">Tarih ve Saat</label>
+          <input type="datetime-local" id="mOdoDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none" />
+        </div>
+        <div>
+          <label class="custom-muted text-[10px] font-bold">Mevcut Kilometre (ODO)</label>
+          <input type="number" id="mOdoInput" required placeholder="örn: 12500" class="w-full mt-1 custom-input border p-3 rounded-xl outline-none font-black text-lg text-cyan-500" />
+        </div>
+        <div>
+          <label class="custom-muted text-[10px] font-bold">Yol Bilgisayarı Ortalaması (L/100km)</label>
+          <input type="number" step="0.1" id="mOdoAvgCons" placeholder="örn: 6.4 (Boş bırakılırsa manuel %/diş geçerli olur)" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-bold text-amber-400" />
+          <span class="text-[9px] custom-muted block mt-1">Eğer bu alana araç ekranındaki ortalamayı yazarsanız, son KM'den bu yana harcanan yakıt hesaplanarak depodaki yüzde ve diş seviyesi otomatik güncellenir.</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <div>
+            <span class="text-[9px] custom-muted block mb-0.5">Kalan Yüzde (%)</span>
+            <input type="number" id="mOdoFuelPercent" min="0" max="100" placeholder="Örn: 45" oninput="syncFuelBarsFromPercent(this.value)" class="w-full custom-input border p-2 rounded-xl outline-none font-black text-emerald-400" />
+          </div>
+          <div>
+            <span class="text-[9px] custom-muted block mb-0.5">Kalan Diş (8 Diş)</span>
+            <select id="mOdoFuelBars" onchange="syncPercentFromFuelBars(this.value)" class="w-full custom-input border p-2 rounded-xl outline-none font-black text-emerald-400">
+              <option value="">-- Seçilmedi --</option>
+              <option value="8">8 / 8 Diş (%100)</option>
+              <option value="6">6 / 8 Diş (%75)</option>
+              <option value="4">4 / 8 Diş (%50)</option>
+              <option value="2">2 / 8 Diş (%25)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="custom-muted text-[10px] font-bold">Açıklama / Not</label>
+          <input type="text" id="mOdoNote" placeholder="örn: Yol dönüşü sayaç kontrolü" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none" />
+        </div>
+        <div class="flex gap-2.5 pt-3 border-t border-slate-700/40">
+          <button type="button" onclick="closeModal('odoModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">Vazgeç</button>
+          <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-xs shadow-md">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- YAKIT MODALI -->
+  <div id="fuelModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
+    <div class="custom-card w-full max-w-md rounded-2xl p-4 border max-h-[88vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center mb-3 border-b border-slate-700/40 pb-2">
+        <h3 id="fuelModalTitle" class="font-black text-xs text-amber-500">⛽ Yeni Yakıt Alımı</h3>
+        <button onclick="closeModal('fuelModal')" class="custom-muted text-lg font-black">✕</button>
+      </div>
+      <form id="fuelForm" onsubmit="saveFuel(event)" class="space-y-3 text-xs flex-1 overflow-y-auto history-scroll pr-1">
+        <input type="hidden" id="fId" />
+        <div class="grid grid-cols-2 gap-2.5">
+          <div><label class="custom-muted text-[10px] font-bold">Tarih ve Saat</label><input type="datetime-local" id="fDate" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none" /></div>
+          <div><label class="custom-muted text-[10px] font-bold">Kilometre (ODO)</label><input type="number" id="fKm" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-cyan-500" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="custom-muted text-[10px] font-bold">İstasyon</label>
+            <select id="fStation" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-bold">
+              <option value="Opet">Opet</option><option value="Shell">Shell</option><option value="BP">BP</option><option value="Petrol Ofisi">Petrol Ofisi</option><option value="Diğer">Diğer</option>
+            </select>
+          </div>
+          <div><label class="custom-muted text-[10px] font-bold">Şube</label><input type="text" id="fBranch" class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div><label class="custom-muted text-[10px] font-bold">Alınan Litre</label><input type="number" step="0.01" id="fLiters" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-amber-500" /></div>
+          <div><label class="custom-muted text-[10px] font-bold">Toplam Tutar (₺)</label><input type="number" step="0.01" id="fTotal" required class="w-full mt-1 custom-input border p-2.5 rounded-xl outline-none font-black text-emerald-500" /></div>
+        </div>
+        <div class="flex gap-2.5 pt-3 border-t border-slate-700/40">
+          <button type="button" onclick="closeModal('fuelModal')" class="flex-1 py-2.5 custom-card font-bold rounded-xl text-xs">İptal</button>
+          <button type="submit" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl font-black text-xs shadow-md">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAM EKRAN GRAFİK MODALI -->
+  <div id="landscapeChartModal" class="fixed inset-0 bg-black/95 modal-backdrop flex items-center justify-center p-2 hidden backdrop-blur-md">
+    <div class="custom-card rounded-3xl p-4 flex flex-col justify-between border shadow-2xl w-[96vw] h-[86vh] max-w-[960px]">
+      <div class="flex justify-between items-center pb-2.5 border-b border-slate-700/40">
+        <h3 id="landscapeChartTitle" class="text-xs font-black text-cyan-400">Grafik Detayı</h3>
+        <button onclick="closeModal('landscapeChartModal')" class="text-xs bg-slate-800 px-3.5 py-1.5 rounded-full font-black text-white">✕ Kapat</button>
+      </div>
+      <div class="flex-1 w-full py-2 relative"><canvas id="landscapeCanvas"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ALT MENÜ -->
+  <nav class="backdrop-blur-2xl border-t pb-1.5 shadow-2xl">
     <div class="flex justify-around items-center max-w-md mx-auto pt-1.5">
-      <button type="button" onclick="switchTab('dashboard')" id="navDashboard" class="flex flex-col items-center py-1.5 px-3 rounded-2xl bg-blue-600/20 text-cyan-500 font-black"><span class="text-xl">📊</span><span class="text-[9px] mt-0.5">Özet</span></button>
+      <button onclick="switchTab('dashboard')" id="navDashboard" class="flex flex-col items-center py-1.5 px-3 rounded-2xl bg-blue-600/20 text-cyan-500 font-black"><span class="text-xl">📊</span><span class="text-[9px]">Özet</span></button>
+      <button onclick="switchTab('fuel')" id="navFuel" class="flex flex-col items-center py-1.5 px-3 rounded-2xl custom-muted font-medium"><span class="text-xl">⛽</span><span class="text-[9px]">Yakıt</span></button>
+      <button onclick="switchTab('expenses')" id="navExpenses" class="flex flex-col items-center py-1.5 px-3 rounded-2xl custom-muted font-medium"><span class="text-xl">💳</span><span class="text-[9px]">Giderler</span></button>
+      <button onclick="switchTab('tires')" id="navTires" class="flex flex-col items-center py-1.5 px-3 rounded-2xl custom-muted font-medium"><span class="text-xl">🔧</span><span class="text-[9px]">Bakım</span></button>
+      <button onclick="switchTab('backup')" id="navBackup" class="flex flex-col items-center py-1.5 px-3 rounded-2xl custom-muted font-medium"><span class="text-xl">⚙️</span><span class="text-[9px]">Yedek</span></button>
     </div>
   </nav>
 
   <script>
-    console.log("OtoTakip Pro v6.0 Çalışıyor.");
+    const themes = ["midnight", "light", "oled"];
+    let currentTheme = localStorage.getItem("ototakip_theme") || "midnight";
+    function applyTheme(t) { currentTheme = t; document.documentElement.setAttribute("data-theme", t); localStorage.setItem("ototakip_theme", t); }
+    function cycleTheme() { let idx = themes.indexOf(currentTheme); applyTheme(themes[(idx + 1) % themes.length]); renderAll(); }
+    function toggleFullScreen() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(() => {}); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
+
+    function getNowLocalISO() {
+      const now = new Date();
+      return new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    }
+    function formatDateTimeLabel(isoStr) {
+      if (!isoStr) return "";
+      return isoStr.includes("T") ? `${isoStr.split("T")[0]} ${isoStr.split("T")[1].substring(0, 5)}` : isoStr;
+    }
+
+    let fuels = JSON.parse(localStorage.getItem("ototakip_fuels") || "[]");
+    let odoLogs = JSON.parse(localStorage.getItem("ototakip_odologs") || "[]");
+    let expenses = JSON.parse(localStorage.getItem("ototakip_expenses") || "[]");
+    let manualOdo = parseFloat(localStorage.getItem("ototakip_manual_odo")) || 0;
+    let carProfile = JSON.parse(localStorage.getItem("ototakip_profile") || '{"name":"Aracım","fuelTank":50}');
+    let selectedYear = localStorage.getItem("ototakip_selected_year") || new Date().getFullYear().toString();
+
+    function persistAllData() {
+      localStorage.setItem("ototakip_fuels", JSON.stringify(fuels));
+      localStorage.setItem("ototakip_odologs", JSON.stringify(odoLogs));
+      localStorage.setItem("ototakip_expenses", JSON.stringify(expenses));
+      localStorage.setItem("ototakip_profile", JSON.stringify(carProfile));
+      if (manualOdo > 0) localStorage.setItem("ototakip_manual_odo", manualOdo.toString());
+    }
+
+    function getLatestVehicleKm() {
+      let maxKm = 0;
+      fuels.forEach(f => { if (f.km > maxKm) maxKm = f.km; });
+      odoLogs.forEach(o => { if (o.km > maxKm) maxKm = o.km; });
+      return Math.max(maxKm, manualOdo);
+    }
+
+    function populateYearSelector() {
+      const yearSelect = document.getElementById("globalYearSelect");
+      let yearsSet = new Set([new Date().getFullYear().toString(), "2025"]);
+      fuels.forEach(f => { if (f.date) yearsSet.add(f.date.substring(0, 4)); });
+      yearSelect.innerHTML = `<option value="all">Tüm Zamanlar</option>`;
+      Array.from(yearsSet).sort().reverse().forEach(y => {
+        let opt = document.createElement("option");
+        opt.value = y; opt.innerText = y;
+        if (y === selectedYear) opt.selected = true;
+        yearSelect.appendChild(opt);
+      });
+    }
+
+    function changeActiveYear(y) { selectedYear = y; localStorage.setItem("ototakip_selected_year", y); renderAll(); }
+
+    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
+    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+
+    function openOdoModal() {
+      document.getElementById("mOdoId").value = "";
+      document.getElementById("mOdoDate").value = getNowLocalISO();
+      document.getElementById("mOdoInput").value = getLatestVehicleKm() || "";
+      document.getElementById("mOdoAvgCons").value = "";
+      document.getElementById("mOdoFuelPercent").value = "";
+      document.getElementById("mOdoFuelBars").value = "";
+      document.getElementById("mOdoNote").value = "";
+      openModal("odoModal");
+    }
+
+    function syncFuelBarsFromPercent(val) {
+      if (val === "") { document.getElementById("mOdoFuelBars").value = ""; return; }
+      let b = Math.round((parseFloat(val) / 100) * 8);
+      document.getElementById("mOdoFuelBars").value = b.toString();
+    }
+    function syncPercentFromFuelBars(val) {
+      if (val === "") { document.getElementById("mOdoFuelPercent").value = ""; return; }
+      let p = Math.round((parseInt(val) / 8) * 100);
+      document.getElementById("mOdoFuelPercent").value = p.toString();
+    }
+
+    function saveManualOdo(e) {
+      e.preventDefault();
+      const kmVal = parseFloat(document.getElementById("mOdoInput").value);
+      const dateVal = document.getElementById("mOdoDate").value;
+      const avgCons = parseFloat(document.getElementById("mOdoAvgCons").value);
+      let pct = document.getElementById("mOdoFuelPercent").value !== "" ? parseFloat(document.getElementById("mOdoFuelPercent").value) : null;
+      let bars = document.getElementById("mOdoFuelBars").value !== "" ? parseInt(document.getElementById("mOdoFuelBars").value) : null;
+      const note = document.getElementById("mOdoNote").value.trim() || "Sayaç Girişi";
+
+      // Yol bilgisayarı ortalaması girildiyse otomatik hesapla
+      if (!isNaN(avgCons) && avgCons > 0) {
+        const lastKm = getLatestVehicleKm();
+        if (kmVal > lastKm) {
+          const dist = kmVal - lastKm;
+          const burnedLiters = (dist * avgCons) / 100;
+          const tankCap = carProfile.fuelTank || 50;
+          // Önceki kalan tahmini üzerinden düşüş
+          let prevLiters = tankCap;
+          const lastOdo = odoLogs.slice().reverse().find(o => o.fuelPercent !== null);
+          if (lastOdo && lastOdo.fuelPercent !== null) prevLiters = (tankCap * lastOdo.fuelPercent) / 100;
+          
+          let remLiters = Math.max(0, prevLiters - burnedLiters);
+          pct = Math.round((remLiters / tankCap) * 100);
+          bars = Math.min(8, Math.max(0, Math.round((remLiters / tankCap) * 8)));
+        }
+      }
+
+      odoLogs.push({ id: "odo_" + Date.now(), date: dateVal, km: kmVal, fuelPercent: pct, fuelBars: bars, note });
+      manualOdo = kmVal;
+      persistAllData();
+      closeModal("odoModal");
+      populateYearSelector();
+      renderAll();
+    }
+
+    function openFuelModal() {
+      document.getElementById("fuelForm").reset();
+      document.getElementById("fId").value = "";
+      document.getElementById("fDate").value = getNowLocalISO();
+      document.getElementById("fKm").value = getLatestVehicleKm() || "";
+      openModal("fuelModal");
+    }
+
+    function saveFuel(e) {
+      e.preventDefault();
+      fuels.push({
+        id: "fuel_" + Date.now(),
+        date: document.getElementById("fDate").value,
+        km: parseFloat(document.getElementById("fKm").value),
+        station: document.getElementById("fStation").value,
+        branch: document.getElementById("fBranch").value.trim(),
+        liters: parseFloat(document.getElementById("fLiters").value),
+        total: parseFloat(document.getElementById("fTotal").value),
+        fillLevel: 'full', isFull: true
+      });
+      persistAllData();
+      closeModal("fuelModal");
+      populateYearSelector();
+      renderAll();
+    }
+
+    function switchTab(tab) {
+      ["dashboard", "fuel", "expenses", "tires", "backup"].forEach(t => {
+        document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1)).classList.add("hidden");
+      });
+      document.getElementById("tab" + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove("hidden");
+    }
+
+    function renderAll() {
+      document.getElementById("headerCarName").innerText = carProfile.name || "Aracım";
+      document.getElementById("headerCarDesc").innerText = `${carProfile.fuelTank || 50}L Depo • ${getLatestVehicleKm()} KM`;
+      document.getElementById("dashPeriodTitle").innerText = `Dönem: ${selectedYear === "all" ? "Tüm Zamanlar" : selectedYear}`;
+      
+      let tfc = 0, tl = 0;
+      fuels.forEach(f => { tfc += f.total; tl += f.liters; });
+      document.getElementById("statFuelExpense").innerText = `₺${Math.round(tfc).toLocaleString('tr-TR')}`;
+      document.getElementById("statFuelVolume").innerText = `Hacim: ${tl.toFixed(1)} L`;
+    }
+
+    applyTheme(currentTheme);
+    populateYearSelector();
+    renderAll();
   </script>
 </body>
 </html>
