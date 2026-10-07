@@ -3,13 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OtoTakip Pro v5.8</title>
+  <title>OtoTakip Pro v5.9</title>
   
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  
+
+  <!-- v1'DEN ALINAN DİNAMİK MANIFEST BLOB (STANDALONE UYGULAMA MODU) -->
+  <script>
+    const manifest = {
+      name: "OtoTakip Pro",
+      short_name: "OtoTakip",
+      start_url: "./index.html",
+      display: "standalone",
+      background_color: "#0b1329",
+      theme_color: "#0b1329",
+      icons: [{
+        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='.9em' font-size='70' x='15'>🚗</text></svg>",
+        sizes: "192x192 512x512",
+        type: "image/svg+xml"
+      }]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  </script>
+
+  <!-- v1'DEN ALINAN GÖMÜLÜ SERVICE WORKER -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swScript = `
+          const CACHE_NAME = 'ototakip-v5.9-pwa';
+          const ASSETS = [
+            './',
+            './index.html',
+            'https://cdn.tailwindcss.com',
+            'https://cdn.jsdelivr.net/npm/chart.js'
+          ];
+          self.addEventListener('install', (e) => {
+            e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(caches.keys().then((keys) => Promise.all(keys.map((k) => { if (k !== CACHE_NAME) return caches.delete(k); }))).then(() => self.clients.claim()));
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              caches.match(e.request).then((res) => {
+                if (res) return res;
+                return fetch(e.request).then((fetchRes) => {
+                  return caches.open(CACHE_NAME).then((cache) => {
+                    if (e.request.method === 'GET' && !e.request.url.startsWith('chrome-extension')) {
+                      cache.put(e.request, fetchRes.clone());
+                    }
+                    return fetchRes;
+                  });
+                }).catch(() => caches.match('./index.html'));
+              })
+            );
+          });
+        `;
+        const swBlob = new Blob([swScript], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+      });
+    }
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -146,7 +208,7 @@
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.8 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.9 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -840,7 +902,7 @@
               <option value="Lastik Tamir / Değişim">🛞 Lastik Tamir / Değişim</option>
               <option value="Kasko">🛡️ Kasko Poliçesi</option>
               <option value="Trafik Sigortası">📋 Trafik Sigortası</option>
-              <option value="MTV (1. Taksit - Ocak)">🏛 MTV (Ocak)</option>
+              <option value="MTV (1. Taksit - Ocak)">🏛️ MTV (Ocak)</option>
               <option value="MTV (2. Taksit - Temmuz)">🏛️ MTV (Temmuz)</option>
               <option value="TÜVTÜRK Muayene">🔍 TÜVTÜRK Muayene</option>
               <option value="Oto Yıkama & Temizlik">🧽 Yıkama & Temizlik</option>
@@ -881,7 +943,7 @@
         <div class="p-3 rounded-xl theme-sub-box flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <input type="checkbox" id="eIncludeInExpert" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-0 cursor-pointer" />
-            <label for="eIncludeInExpert" class="text-[11px] font-black text-emerald-500 cursor-pointer">🛡️️ Garanti / Ekspertiz Raporuna Dahil Et</label>
+            <label for="eIncludeInExpert" class="text-[11px] font-black text-emerald-500 cursor-pointer">🛡️ Garanti / Ekspertiz Raporuna Dahil Et</label>
           </div>
           <span class="text-[9px] custom-muted font-bold">Onaylı</span>
         </div>
@@ -2179,7 +2241,7 @@
         });
       }
 
-      const bText = eligible[0].days <= 0 ? `⚠️️ ${eligible[0].name.split(" ")[1]} ACİL!` : `${eligible[0].name.split(" ")[1]}: ${eligible[0].text}`;
+      const bText = eligible[0].days <= 0 ? `⚠️ ${eligible[0].name.split(" ")[1]} ACİL!` : `${eligible[0].name.split(" ")[1]}: ${eligible[0].text}`;
       badgeEl.innerText = bText;
       badgeEl.className = eligible[0].days <= 15 
         ? "text-[10px] bg-rose-950/30 text-rose-500 border border-rose-800/40 px-2 py-0.5 rounded-lg font-black truncate animate-pulse" 
@@ -2714,7 +2776,7 @@
         if (landscapeChartInstance) landscapeChartInstance.destroy();
         landscapeChartInstance = new Chart(ctx, { 
           type: 'bar', 
-          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
+          data: { labels: m.labels.length ? m.labels : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
 
@@ -2891,7 +2953,6 @@
       const tankCapacity = carProfile.fuelTank || 50;
       const liveKm = getLatestVehicleKm();
       
-      // Son yakıttan beri geçen km ve süreyi bul
       const sFuels = fuels.slice().sort((a,b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
       const lastFuel = sFuels[sFuels.length - 1];
       const diffInfoEl = document.getElementById("lastFuelDiffInfo");
@@ -2904,7 +2965,6 @@
         diffInfoEl.innerText = `Son Dolumdan Beri: --`;
       }
 
-      // Son girilen 8 dişli yakıt seviyesini bul ve canlı düş
       const sortedOdos = odoLogs.slice().filter(o => o.fuelBars !== null && o.fuelBars !== undefined).sort((a,b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
       const lastOdoWithBars = sortedOdos[sortedOdos.length - 1];
       const barsDisplay = document.getElementById("fuelBarsDisplay");
@@ -2923,7 +2983,6 @@
         barsDisplay.innerText = `-- / 8 Diş`;
       }
 
-      // Genel menzil tahmini
       if (avgCons && avgCons > 0) {
         const estFullRange = Math.round((tankCapacity / avgCons) * 100);
         const lastFull = sFuels.slice().reverse().find(f => (f.fillLevel === 'full' || f.isFull));
@@ -3388,7 +3447,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.8_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.9_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -3400,7 +3459,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5.8_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v5.9_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
