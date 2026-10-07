@@ -37,7 +37,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         const swCode = `
-          const CACHE_NAME = 'ototakip-v6-stable-final';
+          const CACHE_NAME = 'ototakip-v6-stable-v9';
           const ASSETS = [
             '${window.location.pathname || "./"}',
             'https://cdn.tailwindcss.com',
@@ -99,7 +99,7 @@
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --input-bg: #0b1329;
-      --nav-bg: rgba(11, 19, 41, 0.96);
+      --nav-bg: rgba(11, 19, 41, 0.98);
       --reminder-box: rgba(30, 41, 59, 0.5);
       --reminder-border: #334155;
     }
@@ -111,7 +111,7 @@
       --text-main: #0f172a;
       --text-muted: #475569;
       --input-bg: #f8fafc;
-      --nav-bg: rgba(255, 255, 255, 0.96);
+      --nav-bg: rgba(255, 255, 255, 0.98);
       --reminder-box: #e2e8f0;
       --reminder-border: #94a3b8;
     }
@@ -850,7 +850,7 @@
     let odoLogs = JSON.parse(localStorage.getItem("ototakip_odologs") || "[]");
     let expenses = JSON.parse(localStorage.getItem("ototakip_expenses") || "[]");
     let manualOdo = parseFloat(localStorage.getItem("ototakip_manual_odo")) || 0;
-    const defaultPaymentMethods = ["Nakit", "Bonus", "Maximum", "World", "Axess"];
+    const defaultPaymentMethods = ["Nakit", "Bonus", "Maximum", "World", "Axess", "Saglam"];
     let customPaymentMethods = JSON.parse(localStorage.getItem("ototakip_payment_methods") || JSON.stringify(defaultPaymentMethods));
     let cardRewards = JSON.parse(localStorage.getItem("ototakip_card_rewards") || "{}");
     let defaultTireData = {
@@ -928,20 +928,30 @@
       const avgCons = parseFloat(document.getElementById("mOdoAvgCons").value);
       const pctInput = document.getElementById("mOdoFuelPercent").value;
       const litInput = document.getElementById("mOdoFuelLiters").value;
-      const note = document.getElementById("mOdoNote").value.trim() || "Rota / KM Kaydı";
+      const note = document.getElementById("mOdoNote").value.trim() || "Manuel KM";
       const tankCap = carProfile.fuelTank || 50;
 
       let overrideLiters = null;
-      if (litInput !== "") overrideLiters = parseFloat(litInput);
-      else if (pctInput !== "") overrideLiters = (tankCap * parseFloat(pctInput)) / 100;
+      let fuelPercent = null;
+      if (litInput !== "") {
+        overrideLiters = parseFloat(litInput);
+        fuelPercent = Math.round((overrideLiters / tankCap) * 100);
+      } else if (pctInput !== "") {
+        fuelPercent = parseFloat(pctInput);
+        overrideLiters = (tankCap * fuelPercent) / 100;
+      }
 
       odoLogs.push({
         id: "odo_" + Date.now(),
+        type: "odo_only",
         date: dateVal,
         km: kmVal,
-        avgCons: isNaN(avgCons) ? null : avgCons,
-        overrideLiters,
-        note
+        fuelPercent: fuelPercent,
+        fuelBars: fuelPercent !== null ? Math.round(fuelPercent / 12.5) : null,
+        isBridge: false,
+        dashboardL100: isNaN(avgCons) ? null : avgCons,
+        overrideLiters: overrideLiters,
+        note: note
       });
       manualOdo = kmVal;
       persistAllData();
@@ -971,10 +981,11 @@
     function saveFuel(e) {
       e.preventDefault();
       fuels.push({
-        id: "fuel_" + Date.now(),
+        id: Date.now().toString(),
         date: document.getElementById("fDate").value,
         km: parseFloat(document.getElementById("fKm").value),
         station: document.getElementById("fStation").value,
+        fuelType: "Benzin/Dizel",
         branch: document.getElementById("fBranch").value.trim(),
         liters: parseFloat(document.getElementById("fLiters").value),
         total: parseFloat(document.getElementById("fTotal").value),
@@ -1004,7 +1015,7 @@
       return combined.sort((a, b) => new Date(b.date) - new Date(a.date) || b.km - a.km);
     }
 
-    // YAKIT, ARA ROTA VE MENZİL ÇÖZÜMLEME MOTORU (GÜVENLİK KİLİTLİ)
+    // YAKIT, ARA ROTA VE MENZİL ÇÖZÜMLEME MOTORU
     function computeFullStatusAndSegmentMetrics() {
       let allEvents = [];
       fuels.forEach(f => allEvents.push({ ...f, eventType: 'fuel', time: new Date(f.date).getTime() }));
@@ -1039,7 +1050,6 @@
             lastFullKm = ev.km;
             currentLiters = tankCap;
           } else {
-            // Kısmi dolum: depoya ekle ve segment başlangıç litresini güncelle
             currentLiters = Math.min(tankCap, currentLiters + (ev.liters || 0));
             prevKmInSeg = ev.km;
           }
@@ -1048,32 +1058,34 @@
           let distFromFull = Math.max(0, ev.km - segFullKm);
           let legDist = Math.max(0, ev.km - prevKmInSeg);
           let legCons = null;
+          let odoAvg = ev.dashboardL100 || ev.avgCons;
 
-          if (ev.avgCons && ev.avgCons > 0 && distFromFull > 0 && legDist > 0) {
-            let totalBurnedCumul = (distFromFull * ev.avgCons) / 100;
+          if (odoAvg && odoAvg > 0 && distFromFull > 0 && legDist > 0) {
+            let totalBurnedCumul = (distFromFull * odoAvg) / 100;
             let burnedLeg = totalBurnedCumul - prevBurnedInSeg;
             
-            // Güvenlik Kilidi: Negatif veya sıfıra bölünme hatasını engelle
             if (burnedLeg > 0 && legDist > 0) {
               let calcCons = (burnedLeg / legDist) * 100;
               if (calcCons >= 1.0 && calcCons <= 30.0) {
                 legCons = calcCons.toFixed(2);
               } else {
-                legCons = ev.avgCons.toFixed(2);
+                legCons = odoAvg.toFixed(2);
               }
             } else {
-              legCons = ev.avgCons.toFixed(2);
+              legCons = odoAvg.toFixed(2);
             }
 
             prevBurnedInSeg = totalBurnedCumul;
             prevKmInSeg = ev.km;
-            lastKnownAvgCons = ev.avgCons;
+            lastKnownAvgCons = odoAvg;
           }
 
           if (ev.overrideLiters !== null && ev.overrideLiters !== undefined) {
             currentLiters = ev.overrideLiters;
+          } else if (ev.fuelPercent !== null && ev.fuelPercent !== undefined) {
+            currentLiters = (tankCap * parseFloat(ev.fuelPercent)) / 100;
           } else if (legDist > 0) {
-            let burnRate = legCons ? parseFloat(legCons) : (ev.avgCons || lastKnownAvgCons);
+            let burnRate = legCons ? parseFloat(legCons) : (odoAvg || lastKnownAvgCons);
             currentLiters = Math.max(0, currentLiters - (legDist * burnRate) / 100);
           }
 
@@ -1115,6 +1127,7 @@
         const m = statusObj.metricsMap[item.id] || {};
 
         if (item.eventType === 'odo') {
+          const odoAvg = item.dashboardL100 || item.avgCons;
           card.innerHTML = `
             <div class="flex justify-between items-center">
               <div>
@@ -1123,7 +1136,7 @@
                   <span class="bg-indigo-900/40 text-indigo-300 font-bold px-1.5 py-0.2 rounded text-[9px]">Rota / KM</span>
                   ${m.legCons ? `<span class="bg-cyan-950 text-cyan-300 border border-cyan-800/40 px-1.5 py-0.2 rounded text-[9px] font-bold">Rota Ort: ${m.legCons} L</span>` : ''}
                 </div>
-                <div class="custom-muted text-[10px]">${dateFormatted} • ${item.note} ${item.avgCons ? '• Ekran Kümülatif: ' + item.avgCons + ' L' : ''}</div>
+                <div class="custom-muted text-[10px]">${dateFormatted} • ${item.note} ${odoAvg ? '• Ekran Kümülatif: ' + odoAvg + ' L' : ''}</div>
                 ${m.distFromFull ? `<div class="text-[9px] text-slate-400 mt-0.5">Son Fullemeden Beri: ${m.distFromFull} km (Bu etap: ${m.legDist || 0} km)</div>` : ''}
               </div>
               <button onclick="deleteOdoLog('${item.id}')" class="text-rose-500 font-bold">Sil</button>
@@ -1229,7 +1242,7 @@
 
       if (cost > 0) {
         expenses.push({
-          id: "exp_" + Date.now(),
+          id: Date.now().toString(),
           date,
           type: "Lastik Tamir / Değişim",
           amount: cost,
@@ -1268,7 +1281,7 @@
     function saveExpense(e) {
       e.preventDefault();
       expenses.push({
-        id: "exp_" + Date.now(),
+        id: Date.now().toString(),
         date: document.getElementById("eDate").value,
         type: document.getElementById("eType").value,
         amount: parseFloat(document.getElementById("eAmount").value) || 0,
@@ -1509,7 +1522,6 @@
       let curKm = getLatestVehicleKm();
       document.getElementById("repCarKm").innerText = `${curKm.toLocaleString('tr-TR')} KM`;
 
-      // Bakım Durumu Canlı Hesabı
       const maintLogs = expenses.filter(e => e.type === "Periyodik Bakım").sort((a,b) => new Date(b.date) - new Date(a.date));
       if (maintLogs.length > 0) {
         const lastMaint = maintLogs[0];
@@ -1524,14 +1536,12 @@
         document.getElementById("repMaintDaysLeft").innerText = "--";
       }
 
-      // Lastik Durumu
       const season = tireData.activeSet || "summer";
       const set = tireData[season];
       document.getElementById("repTireSet").innerText = season === "summer" ? "Yazlık Set" : "Kışlık Set";
       let tDist = curKm >= (set.mountedKm || 0) ? curKm - (set.mountedKm || 0) : 0;
       document.getElementById("repTireDist").innerText = `${tDist.toLocaleString('tr-TR')} km`;
 
-      // Finansal Döküm
       let totalF = 0, totalL = 0;
       fuels.forEach(f => { totalF += f.total; totalL += f.liters; });
       let fixed = 0, totalE = totalF;
@@ -1601,9 +1611,9 @@
       try {
         const item = JSON.parse(raw);
         if (item.type === "fuel" || item.liters) {
-          fuels.push({ id: "fuel_" + Date.now(), date: item.date || getNowLocalISO(), km: item.km || getLatestVehicleKm(), station: item.station || "Opet", branch: "", liters: parseFloat(item.liters)||0, total: parseFloat(item.total)||0, isFull: true });
+          fuels.push({ id: Date.now().toString(), date: item.date || getNowLocalISO(), km: item.km || getLatestVehicleKm(), station: item.station || "Opet", branch: "", liters: parseFloat(item.liters)||0, total: parseFloat(item.total)||0, isFull: true });
         } else {
-          expenses.push({ id: "exp_" + Date.now(), date: item.date || getNowLocalISO(), type: item.type || "Periyodik Bakım", amount: parseFloat(item.amount)||0, desc: item.desc || "AI Girişi" });
+          expenses.push({ id: Date.now().toString(), date: item.date || getNowLocalISO(), type: item.type || "Periyodik Bakım", amount: parseFloat(item.amount)||0, desc: item.desc || "AI Girişi" });
         }
         persistAllData();
         renderAll();
@@ -1647,7 +1657,6 @@
       a.click();
     }
 
-    // ESNEK JSON İÇE AKTARMA (TÜM VERSİYONLARLA UYUMLU)
     function processImportedObject(p) {
       if (!p || typeof p !== "object") throw new Error("Geçersiz veri");
       if (p.fuels || p.fuelEntries) fuels = p.fuels || p.fuelEntries;
@@ -1658,6 +1667,10 @@
       if (p.paymentMethods || p.customPaymentMethods) customPaymentMethods = p.paymentMethods || p.customPaymentMethods;
       if (p.cardRewards) cardRewards = p.cardRewards;
       if (p.manualOdo) manualOdo = parseFloat(p.manualOdo);
+
+      // Kart listesini güncelle (Yedekteki kartlar da listeye eklenir)
+      fuels.forEach(f => { if (f.paymentMethod && !customPaymentMethods.includes(f.paymentMethod)) customPaymentMethods.push(f.paymentMethod); });
+      expenses.forEach(e => { if (e.paymentMethod && !customPaymentMethods.includes(e.paymentMethod)) customPaymentMethods.push(e.paymentMethod); });
 
       persistAllData();
       populatePaymentSelects();
