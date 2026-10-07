@@ -1,8 +1,10 @@
-const CACHE_NAME = 'ototakip-oto5-v7';
+const CACHE_NAME = 'ototakip-oto5-v8';
 const ASSETS = [
   '/oto5/',
   '/oto5/index.html',
-  '/oto5/manifest.json'
+  '/oto5/manifest.json',
+  'https://cdn.tailwindcss.com',
+  'https://cdn.jsdelivr.net/npm/chart.js'
 ];
 
 self.addEventListener('install', (e) => {
@@ -27,15 +29,22 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      if (res) return res;
+    caches.match(e.request).then((cachedRes) => {
+      if (cachedRes) return cachedRes;
+
       return fetch(e.request).then((fetchRes) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          if (e.request.method === 'GET' && !e.request.url.startsWith('chrome-extension')) {
-            cache.put(e.request, fetchRes.clone());
-          }
-          return fetchRes;
-        });
+        // Yalnızca geçerli GET ve http/https isteklerini önbelleğe al
+        if (
+          e.request.method === 'GET' && 
+          fetchRes.status === 200 && 
+          (e.request.url.startsWith('http://') || e.request.url.startsWith('https://'))
+        ) {
+          const resClone = fetchRes.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, resClone);
+          });
+        }
+        return fetchRes;
       }).catch(() => caches.match('/oto5/index.html'));
     })
   );
