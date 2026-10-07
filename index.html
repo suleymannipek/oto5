@@ -3,71 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OtoTakip Pro v5.9</title>
+  <title>OtoTakip Pro v6.0</title>
   
   <meta id="metaThemeColor" name="theme-color" content="#0b1329" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-  <!-- v1'DEN ALINAN DİNAMİK MANIFEST BLOB (STANDALONE UYGULAMA MODU) -->
-  <script>
-    const manifest = {
-      name: "OtoTakip Pro",
-      short_name: "OtoTakip",
-      start_url: "./index.html",
-      display: "standalone",
-      background_color: "#0b1329",
-      theme_color: "#0b1329",
-      icons: [{
-        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='.9em' font-size='70' x='15'>🚗</text></svg>",
-        sizes: "192x192 512x512",
-        type: "image/svg+xml"
-      }]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  </script>
-
-  <!-- v1'DEN ALINAN GÖMÜLÜ SERVICE WORKER -->
+  <!-- PWA MANIFEST & SERVICE WORKER BAĞLANTISI -->
+  <link rel="manifest" href="./manifest.json" />
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        const swScript = `
-          const CACHE_NAME = 'ototakip-v5.9-pwa';
-          const ASSETS = [
-            './',
-            './index.html',
-            'https://cdn.tailwindcss.com',
-            'https://cdn.jsdelivr.net/npm/chart.js'
-          ];
-          self.addEventListener('install', (e) => {
-            e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
-          });
-          self.addEventListener('activate', (e) => {
-            e.waitUntil(caches.keys().then((keys) => Promise.all(keys.map((k) => { if (k !== CACHE_NAME) return caches.delete(k); }))).then(() => self.clients.claim()));
-          });
-          self.addEventListener('fetch', (e) => {
-            e.respondWith(
-              caches.match(e.request).then((res) => {
-                if (res) return res;
-                return fetch(e.request).then((fetchRes) => {
-                  return caches.open(CACHE_NAME).then((cache) => {
-                    if (e.request.method === 'GET' && !e.request.url.startsWith('chrome-extension')) {
-                      cache.put(e.request, fetchRes.clone());
-                    }
-                    return fetchRes;
-                  });
-                }).catch(() => caches.match('./index.html'));
-              })
-            );
-          });
-        `;
-        const swBlob = new Blob([swScript], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
       });
     }
   </script>
@@ -208,7 +156,7 @@
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5">
           <h1 id="headerCarName" class="text-xs font-black tracking-tight truncate">Aracım</h1>
-          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v5.9 PRO</span>
+          <span class="text-[9px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-sm flex-shrink-0">v6.0 PRO</span>
         </div>
         <p id="headerCarDesc" class="text-[10px] custom-muted font-semibold truncate">Kayıtlı Veri Yok</p>
       </div>
@@ -374,7 +322,7 @@
     <!-- 2. SEKME: YAKIT -->
     <div id="tabFuel" class="space-y-3 hidden">
       
-      <!-- MENZİL & CANLI 8 DİŞ VE SON DOLUM ARALIĞI KARTI -->
+      <!-- MENZİL & CANLI DEPO SEVİYESİ VE SON DOLUM ARALIĞI KARTI -->
       <div id="fuelRangeBanner" class="custom-card p-3.5 shadow border-blue-900/40 space-y-2">
         <div class="flex justify-between items-center text-xs">
           <div class="flex items-center gap-2.5">
@@ -390,7 +338,7 @@
         <div class="pt-2 border-t border-slate-700/40 flex justify-between items-center text-[10px]">
           <div>
             <span class="custom-muted font-bold">Depodaki Yakıt:</span>
-            <span id="fuelBarsDisplay" class="font-black text-emerald-400 ml-1">-- / 8 Diş</span>
+            <span id="fuelBarsDisplay" class="font-black text-emerald-400 ml-1">--</span>
           </div>
           <div id="lastFuelDiffInfo" class="font-bold text-cyan-400 text-right truncate">
             Son Yakıttan Beri: --
@@ -736,7 +684,7 @@
     </div>
   </div>
 
-  <!-- SAYAÇ / ODO MODALI -->
+  <!-- SAYAÇ / ODO MODALI (YÜZDE VE DİŞ DESTEKLİ) -->
   <div id="odoModal" class="fixed inset-0 bg-black/80 modal-backdrop flex items-center justify-center p-3 hidden backdrop-blur-sm">
     <div class="custom-card w-full max-w-md rounded-2xl p-4 border shadow-2xl max-h-[88vh] flex flex-col">
       <div class="flex justify-between items-center mb-3 shrink-0 border-b border-slate-700/40 pb-2">
@@ -758,21 +706,30 @@
           </div>
         </div>
 
-        <!-- 8 DİŞLİ DEPO SEVİYESİ SEÇİMİ -->
-        <div class="p-3 rounded-xl theme-sub-box space-y-1.5">
-          <label class="custom-muted text-[10px] font-bold block">Göstergedeki Yakıt Seviyesi (8 Diş)</label>
-          <select id="mOdoFuelBars" class="w-full custom-input border p-2.5 rounded-xl outline-none font-black text-emerald-400">
-            <option value="">-- Belirtilmedi --</option>
-            <option value="8">8 / 8 Diş (Tam Dolu - %100)</option>
-            <option value="7">7 / 8 Diş (~%87)</option>
-            <option value="6">6 / 8 Diş (~%75)</option>
-            <option value="5">5 / 8 Diş (~%62)</option>
-            <option value="4">4 / 8 Diş (Yarım Depo - %50)</option>
-            <option value="3">3 / 8 Diş (~%37)</option>
-            <option value="2">2 / 8 Diş (Çeyrek Depo - %25)</option>
-            <option value="1">1 / 8 Diş (Kritik Rezerv - %12)</option>
-          </select>
-          <span class="text-[9px] custom-muted block font-medium">Bu bilgi Tahmini Menzil kartında kalan yakıtı hesaplamak için kullanılır.</span>
+        <!-- KALAN YAKIT: HEM YÜZDE (%) HEM DİŞ ENTEGRE EDİLMİŞ ALAN -->
+        <div class="p-3 rounded-xl theme-sub-box space-y-2">
+          <label class="custom-muted text-[10px] font-bold block">Göstergedeki Kalan Yakıt Seviyesi (Opsiyonel)</label>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[9px] custom-muted block mb-0.5">Yüzde Olarak (%)</span>
+              <input type="number" id="mOdoFuelPercent" min="0" max="100" placeholder="Örn: 45" oninput="syncFuelBarsFromPercent(this.value)" class="w-full custom-input border p-2 rounded-xl outline-none font-black text-emerald-400 text-xs" />
+            </div>
+            <div>
+              <span class="text-[9px] custom-muted block mb-0.5">Diş Seviyesi (8 Diş)</span>
+              <select id="mOdoFuelBars" onchange="syncPercentFromFuelBars(this.value)" class="w-full custom-input border p-2 rounded-xl outline-none font-black text-emerald-400 text-xs">
+                <option value="">-- Seçilmedi --</option>
+                <option value="8">8 / 8 Diş (%100)</option>
+                <option value="7">7 / 8 Diş (~%87)</option>
+                <option value="6">6 / 8 Diş (~%75)</option>
+                <option value="5">5 / 8 Diş (~%62)</option>
+                <option value="4">4 / 8 Diş (Yarım - %50)</option>
+                <option value="3">3 / 8 Diş (~%37)</option>
+                <option value="2">2 / 8 Diş (Çeyrek - %25)</option>
+                <option value="1">1 / 8 Diş (Rezerv - %12)</option>
+              </select>
+            </div>
+          </div>
+          <span class="text-[9px] custom-muted block font-medium">İster yüzde ister diş girin, sistem ikisini birbirine çevirir ve kalan menzili buna göre canlı günceller.</span>
         </div>
 
         <div class="p-3 rounded-xl theme-sub-box border flex items-start gap-2.5">
@@ -902,7 +859,7 @@
               <option value="Lastik Tamir / Değişim">🛞 Lastik Tamir / Değişim</option>
               <option value="Kasko">🛡️ Kasko Poliçesi</option>
               <option value="Trafik Sigortası">📋 Trafik Sigortası</option>
-              <option value="MTV (1. Taksit - Ocak)">🏛️ MTV (Ocak)</option>
+              <option value="MTV (1. Taksit - Ocak)">🏛 MTV (Ocak)</option>
               <option value="MTV (2. Taksit - Temmuz)">🏛️ MTV (Temmuz)</option>
               <option value="TÜVTÜRK Muayene">🔍 TÜVTÜRK Muayene</option>
               <option value="Oto Yıkama & Temizlik">🧽 Yıkama & Temizlik</option>
@@ -1550,6 +1507,28 @@
       }
     }
 
+    function syncFuelBarsFromPercent(pctVal) {
+      const select = document.getElementById("mOdoFuelBars");
+      if (pctVal === "" || isNaN(pctVal)) {
+        select.value = "";
+        return;
+      }
+      const pct = Math.max(0, Math.min(100, parseFloat(pctVal)));
+      const bars = Math.round((pct / 100) * 8);
+      select.value = bars.toString();
+    }
+
+    function syncPercentFromFuelBars(barVal) {
+      const pctInput = document.getElementById("mOdoFuelPercent");
+      if (!barVal) {
+        pctInput.value = "";
+        return;
+      }
+      const bars = parseInt(barVal);
+      const pct = Math.round((bars / 8) * 100);
+      pctInput.value = pct.toString();
+    }
+
     function applyCarProfile() {
       const liveKm = getLatestVehicleKm();
       document.getElementById("headerCarName").innerText = carProfile.name || "Aracım";
@@ -1656,7 +1635,7 @@
       }
     }
 
-    // SADECE KM MODALI - EN SON KM BAZ ALINARAK AÇILIR
+    // SADECE KM MODALI - EN SON KM BAZ ALINIR, YÜZDE VE DİŞ DOLDURULUR
     function openOdoModal(editId = null) {
       if (editId) {
         const item = odoLogs.find(o => o.id === editId);
@@ -1664,6 +1643,7 @@
         document.getElementById("mOdoId").value = item.id;
         document.getElementById("mOdoDate").value = item.date;
         document.getElementById("mOdoInput").value = item.km;
+        document.getElementById("mOdoFuelPercent").value = item.fuelPercent !== undefined && item.fuelPercent !== null ? item.fuelPercent : "";
         document.getElementById("mOdoFuelBars").value = item.fuelBars || "";
         document.getElementById("mOdoIsBridge").checked = !!item.isBridge;
         document.getElementById("mOdoNote").value = item.note || "";
@@ -1673,6 +1653,7 @@
         document.getElementById("mOdoId").value = "";
         document.getElementById("mOdoDate").value = getNowLocalISO();
         document.getElementById("mOdoInput").value = liveKm > 0 ? liveKm : "";
+        document.getElementById("mOdoFuelPercent").value = "";
         document.getElementById("mOdoFuelBars").value = "";
         document.getElementById("mOdoIsBridge").checked = false;
         document.getElementById("mOdoNote").value = "";
@@ -1687,6 +1668,8 @@
       const editId = document.getElementById("mOdoId").value;
       const kmVal = parseFloat(document.getElementById("mOdoInput").value);
       const dateVal = document.getElementById("mOdoDate").value;
+      const pctInput = document.getElementById("mOdoFuelPercent").value;
+      const fuelPercentVal = pctInput !== "" ? parseFloat(pctInput) : null;
       const fuelBarsVal = document.getElementById("mOdoFuelBars").value ? parseInt(document.getElementById("mOdoFuelBars").value) : null;
       const isBridge = document.getElementById("mOdoIsBridge").checked;
       const noteVal = document.getElementById("mOdoNote").value.trim() || (isBridge ? "Ay Sonu Köprü KM" : "Manuel KM");
@@ -1699,9 +1682,9 @@
       if (kmVal > 0) {
         if (editId) {
           const idx = odoLogs.findIndex(o => o.id === editId);
-          if (idx > -1) odoLogs[idx] = { ...odoLogs[idx], date: dateVal, km: kmVal, fuelBars: fuelBarsVal, isBridge, note: noteVal };
+          if (idx > -1) odoLogs[idx] = { ...odoLogs[idx], date: dateVal, km: kmVal, fuelPercent: fuelPercentVal, fuelBars: fuelBarsVal, isBridge, note: noteVal };
         } else {
-          odoLogs.push({ id: "odo_" + Date.now(), type: "odo_only", date: dateVal, km: kmVal, fuelBars: fuelBarsVal, isBridge, note: noteVal });
+          odoLogs.push({ id: "odo_" + Date.now(), type: "odo_only", date: dateVal, km: kmVal, fuelPercent: fuelPercentVal, fuelBars: fuelBarsVal, isBridge, note: noteVal });
         }
         persistAllData();
         closeModal("odoModal");
@@ -1718,7 +1701,6 @@
       }
     }
 
-    // YAKIT SEKMESİ GÖRÜNÜM FİLTRESİ
     let activeFuelViewFilter = "all";
     function setFuelViewFilter(mode) {
       activeFuelViewFilter = mode;
@@ -1794,13 +1776,20 @@
         const dateFormatted = formatDateTimeLabel(item.date);
 
         if (item.isOdoOnly) {
+          let fuelTag = "";
+          if (item.fuelPercent !== undefined && item.fuelPercent !== null) {
+            fuelTag = `<span class="bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 font-bold px-1.5 py-0.5 rounded text-[9px]">⛽ %${item.fuelPercent} (${item.fuelBars ? item.fuelBars + '/8 Diş' : ''})</span>`;
+          } else if (item.fuelBars) {
+            fuelTag = `<span class="bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 font-bold px-1.5 py-0.5 rounded text-[9px]">⛽ ${item.fuelBars}/8 Diş</span>`;
+          }
+
           card.innerHTML = `
             <div class="flex justify-between items-center">
               <div>
                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                   <span class="font-black text-xs text-indigo-500">📍 ${item.km.toLocaleString('tr-TR')} km</span>
                   <span class="bg-indigo-900/20 text-indigo-400 font-bold px-2 py-0.5 rounded-md text-[9px]">KM Kaydı</span>
-                  ${item.fuelBars ? `<span class="bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 font-bold px-1.5 py-0.5 rounded text-[9px]">⛽ ${item.fuelBars}/8 Diş</span>` : ''}
+                  ${fuelTag}
                   ${item.isBridge ? `<span class="bg-blue-900/30 text-blue-400 border border-blue-600/40 font-black px-1.5 py-0.5 rounded text-[9px]">🌉 Ay Sonu Köprüsü</span>` : ''}
                 </div>
                 <div class="custom-muted text-[10px] font-semibold">${dateFormatted} • ${item.note}</div>
@@ -2776,7 +2765,7 @@
         if (landscapeChartInstance) landscapeChartInstance.destroy();
         landscapeChartInstance = new Chart(ctx, { 
           type: 'bar', 
-          data: { labels: m.labels.length ? m.labels : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
+          data: { labels: m.labels.length ? m.labels.map(l => l + ". Ay") : ["-"], datasets: [{ label: fuelChartMode === 'tl' ? 'Gider (₺)' : 'Miktar (L)', data: dsVals, backgroundColor: gradFuelModal, borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }] }, 
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tC } } }, scales: { x: { grid: { color: gC }, ticks: { color: tC, font: { size: 11, weight: 'bold' } } }, y: { grid: { color: gC }, ticks: { color: tC, font: { size: 11 } } } } } 
         }); 
 
@@ -2798,12 +2787,10 @@
         
         const sF = cF.slice().sort((a, b) => new Date(a.date) - new Date(b.date)); 
 
-        // Aydınlık ve ferah gradyan
         let gradPriceModal = ctx.createLinearGradient(0, 0, 0, 320);
         gradPriceModal.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
         gradPriceModal.addColorStop(1, 'rgba(56, 189, 248, 0.00)');
 
-        // Sadeleştirilmiş X ekseni etiketleri (GG.AA)
         const shortLabels = sF.map(f => {
           if (!f.date) return "-";
           const d = new Date(f.date);
@@ -2891,7 +2878,6 @@
       closeModal("landscapeChartModal");
     }
 
-    // TARİH ARALIKLI ÖZEL YAKIT FİLTRELEME FONKSİYONLARI
     function openCustomFuelFilterModal() {
       const now = new Date();
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
@@ -2947,7 +2933,7 @@
       }
     }
 
-    // MENZİL KARTI VE CANLI 8 DİŞ TAKİBİ GÜNCELLEMESİ
+    // MENZİL KARTI VE CANLI YAKIT DÜŞÜŞÜ (REFERANS NOKTASINA GÖRE HESAP)
     function updateRangeEstimate(avgCons) {
       const banner = document.getElementById("fuelRangeBanner");
       const tankCapacity = carProfile.fuelTank || 50;
@@ -2965,32 +2951,61 @@
         diffInfoEl.innerText = `Son Dolumdan Beri: --`;
       }
 
-      const sortedOdos = odoLogs.slice().filter(o => o.fuelBars !== null && o.fuelBars !== undefined).sort((a,b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
-      const lastOdoWithBars = sortedOdos[sortedOdos.length - 1];
-      const barsDisplay = document.getElementById("fuelBarsDisplay");
+      // En son girilen yakıt referansı (Tam Depo vs KM'deki Yüzde/Diş Seviyesi)
+      const sortedOdosWithLevel = odoLogs.slice().filter(o => (o.fuelPercent !== null && o.fuelPercent !== undefined) || (o.fuelBars !== null && o.fuelBars !== undefined)).sort((a,b) => new Date(a.date) - new Date(b.date) || a.km - b.km);
+      const lastOdoLevel = sortedOdosWithLevel[sortedOdosWithLevel.length - 1];
+      const lastFullFuel = sFuels.slice().reverse().find(f => (f.fillLevel === 'full' || f.isFull));
 
-      if (lastOdoWithBars) {
-        const barVol = tankCapacity / 8;
-        let initLiters = lastOdoWithBars.fuelBars * barVol;
-        let burned = 0;
-        if (avgCons && avgCons > 0 && liveKm >= lastOdoWithBars.km) {
-          burned = ((liveKm - lastOdoWithBars.km) * avgCons) / 100;
+      let refPoint = null;
+      if (lastOdoLevel && lastFullFuel) {
+        refPoint = (new Date(lastOdoLevel.date) >= new Date(lastFullFuel.date)) ? { type: 'odo', data: lastOdoLevel } : { type: 'fuel', data: lastFullFuel };
+      } else if (lastOdoLevel) {
+        refPoint = { type: 'odo', data: lastOdoLevel };
+      } else if (lastFullFuel) {
+        refPoint = { type: 'fuel', data: lastFullFuel };
+      }
+
+      const barsDisplay = document.getElementById("fuelBarsDisplay");
+      let estRemLiters = null;
+
+      if (refPoint) {
+        let baseLiters = 0;
+        let baseKm = refPoint.data.km;
+
+        if (refPoint.type === 'fuel') {
+          baseLiters = tankCapacity;
+        } else {
+          if (refPoint.data.fuelPercent !== null && refPoint.data.fuelPercent !== undefined) {
+            baseLiters = (tankCapacity * refPoint.data.fuelPercent) / 100;
+          } else {
+            baseLiters = (tankCapacity / 8) * (refPoint.data.fuelBars || 0);
+          }
         }
-        let estRemLiters = Math.max(0, initLiters - burned);
-        let estBars = Math.min(8, Math.max(0, Math.round((estRemLiters / tankCapacity) * 8)));
-        barsDisplay.innerText = `${estBars}/8 Diş (~${estRemLiters.toFixed(1)} L)`;
+
+        let burned = 0;
+        if (avgCons && avgCons > 0 && liveKm >= baseKm) {
+          burned = ((liveKm - baseKm) * avgCons) / 100;
+        }
+
+        estRemLiters = Math.max(0, baseLiters - burned);
+        const estPct = Math.round((estRemLiters / tankCapacity) * 100);
+        const estBars = Math.min(8, Math.max(0, Math.round((estRemLiters / tankCapacity) * 8)));
+
+        barsDisplay.innerText = `%${estPct} • ${estBars}/8 Diş (~${estRemLiters.toFixed(1)} L)`;
       } else {
-        barsDisplay.innerText = `-- / 8 Diş`;
+        barsDisplay.innerText = `--`;
       }
 
       if (avgCons && avgCons > 0) {
         const estFullRange = Math.round((tankCapacity / avgCons) * 100);
-        const lastFull = sFuels.slice().reverse().find(f => (f.fillLevel === 'full' || f.isFull));
-        let distSinceFull = 0;
-        if (lastFull && liveKm >= lastFull.km) {
-          distSinceFull = liveKm - lastFull.km;
+        let remEst = 0;
+
+        if (estRemLiters !== null) {
+          remEst = Math.round((estRemLiters / avgCons) * 100);
+        } else {
+          remEst = estFullRange;
         }
-        const remEst = Math.max(0, estFullRange - distSinceFull);
+
         document.getElementById("fuelRangeText").innerText = `Tam Depo ile: ~${estFullRange.toLocaleString('tr-TR')} km`;
         document.getElementById("fuelRangeRemaining").innerText = `Kalan Tahmin: ~${remEst.toLocaleString('tr-TR')} km`;
         banner.classList.remove("hidden");
@@ -3447,7 +3462,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v5.9_${new Date().toISOString().split("T")[0]}.json`; 
+      a.download = `${carProfile.name.toLowerCase().replace(/\s+/g, '_')}_yedek_v6.0_${new Date().toISOString().split("T")[0]}.json`; 
       a.click(); 
     }
 
@@ -3459,7 +3474,7 @@
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); 
       const a = document.createElement("a"); 
       a.href = URL.createObjectURL(blob); 
-      a.download = `yakit_gecmisi_v5.9_${new Date().toISOString().split("T")[0]}.csv`; 
+      a.download = `yakit_gecmisi_v6.0_${new Date().toISOString().split("T")[0]}.csv`; 
       a.click(); 
     }
 
